@@ -1,0 +1,170 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "audits": "Audits",
+    "pricing": "Pricing",
+    "settings": "Settings",
+    "logout": "Logout",
+    "login": "Login",
+    "signup": "Sign Up"
+  },
+  "landing": {
+    "hero_title": "AI-Powered SEO Audits",
+    "hero_title_highlight": "for Agencies",
+    "hero_subtitle": "Deliver professional SEO reports to your clients in minutes. White-label PDF reports, AI recommendations, and multi-language output.",
+    "cta_start": "Start Free Trial",
+    "cta_demo": "See a Demo",
+    "badge_trial": "14-day free trial",
+    "badge_nocard": "No credit card required",
+    "features_title": "Everything your agency needs",
+    "features": {
+      "ai_analysis": {
+        "title": "AI-Powered Analysis",
+        "desc": "Claude AI generates actionable, narrative recommendations tailored to each site."
+      },
+      "pdf_reports": {
+        "title": "Professional PDF Reports",
+        "desc": "Beautifully designed reports your clients will love, ready in minutes."
+      },
+      "multilang": {
+        "title": "Multi-Language Output",
+        "desc": "Generate reports in English, Italian, and more — perfect for local clients."
+      },
+      "white_label": {
+        "title": "White-Label Ready",
+        "desc": "Your agency name on every report. Your brand, your clients."
+      },
+      "auto_email": {
+        "title": "Automated Delivery",
+        "desc": "Reports emailed directly to your clients automatically upon completion."
+      },
+      "referrals": {
+        "title": "Referral Rewards",
+        "desc": "Earn a free month for every agency you refer that subscribes."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "new_audit": "New Audit",
+    "recent_audits": "Recent Audits",
+    "usage": "This Month",
+    "audits_used": "Audits Used",
+    "of": "of",
+    "no_audits": "No audits yet. Run your first audit to get started.",
+    "stats": {
+      "total_audits": "Total Audits",
+      "avg_score": "Avg Score",
+      "critical_issues": "Critical Issues",
+      "reports_sent": "Reports Sent"
+    }
+  },
+  "audit": {
+    "new_title": "New SEO Audit",
+    "url_label": "Website URL",
+    "url_placeholder": "https://example.com",
+    "client_name_label": "Client Name",
+    "client_name_placeholder": "Acme S.r.l.",
+    "client_email_label": "Client Email (for automatic delivery)",
+    "client_email_placeholder": "client@example.com",
+    "language_label": "Report Language",
+    "submit": "Run Audit",
+    "submitting": "Analyzing...",
+    "status": {
+      "pending": "Queued",
+      "running": "Analyzing",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "download_pdf": "Download PDF",
+    "view_report": "View Report",
+    "score": "SEO Score",
+    "sections": {
+      "technical": "Technical",
+      "on_page": "On-Page",
+      "performance": "Performance",
+      "mobile": "Mobile",
+      "security": "Security"
+    }
+  },
+  "pricing": {
+    "title": "Simple, transparent pricing",
+    "subtitle": "Choose the plan that fits your agency. Upgrade or downgrade anytime.",
+    "monthly": "Monthly",
+    "per_month": "/ month",
+    "current_plan": "Current Plan",
+    "choose_plan": "Choose Plan",
+    "beta_offer": "🎉 Beta Tester Offer: Get your first month free at launch!",
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "price": "49",
+        "audits": "10 audits / month",
+        "features": ["AI-powered recommendations", "PDF reports", "Email delivery", "Multi-language output", "Email support"]
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "99",
+        "audits": "50 audits / month",
+        "features": ["Everything in Starter", "Priority processing", "White-label reports", "Referral rewards", "Priority support"]
+      },
+      "agency": {
+        "name": "Agency",
+        "price": "199",
+        "audits": "200 audits / month",
+        "features": ["Everything in Professional", "Unlimited clients", "API access", "Custom branding", "Dedicated support"]
+      }
+    }
+  },
+  "auth": {
+    "login_title": "Welcome back",
+    "login_subtitle": "Sign in to your account",
+    "register_title": "Start your free trial",
+    "register_subtitle": "14 days free, no credit card required",
+    "email": "Email address",
+    "password": "Password",
+    "full_name": "Full name",
+    "company_name": "Agency / Company name",
+    "preferred_language": "Your preferred language",
+    "referral_code": "Referral code (optional)",
+    "login_button": "Sign In",
+    "register_button": "Create Account",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "sign_up": "Sign up",
+    "sign_in": "Sign in",
+    "forgot_password": "Forgot password?"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "language": "Default Language",
+    "language_desc": "This will be the default language for new audit reports. You can override it per audit.",
+    "save": "Save Changes",
+    "saved": "Saved!",
+    "subscription": "Subscription",
+    "referrals": "Referrals",
+    "refer_friend": "Refer a colleague",
+    "refer_desc": "Earn one free month for every agency that subscribes via your referral.",
+    "referral_link": "Your referral code",
+    "copy_link": "Copy",
+    "copied": "Copied!",
+    "referrals_sent": "Referrals sent",
+    "referrals_converted": "Converted"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No"
+  }
+}

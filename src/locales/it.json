@@ -1,0 +1,170 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "audits": "Audit",
+    "pricing": "Prezzi",
+    "settings": "Impostazioni",
+    "logout": "Esci",
+    "login": "Accedi",
+    "signup": "Registrati"
+  },
+  "landing": {
+    "hero_title": "Audit SEO Potenziati dall'AI",
+    "hero_title_highlight": "per le Agenzie",
+    "hero_subtitle": "Consegna report SEO professionali ai tuoi clienti in pochi minuti. Report PDF white-label, raccomandazioni AI e output multilingua.",
+    "cta_start": "Inizia la Prova Gratuita",
+    "cta_demo": "Guarda una Demo",
+    "badge_trial": "14 giorni di prova gratuita",
+    "badge_nocard": "Nessuna carta di credito richiesta",
+    "features_title": "Tutto ciò di cui la tua agenzia ha bisogno",
+    "features": {
+      "ai_analysis": {
+        "title": "Analisi Potenziata dall'AI",
+        "desc": "L'AI Claude genera raccomandazioni pratiche e narrative personalizzate per ogni sito."
+      },
+      "pdf_reports": {
+        "title": "Report PDF Professionali",
+        "desc": "Report dal design curato che i tuoi clienti adoreranno, pronti in pochi minuti."
+      },
+      "multilang": {
+        "title": "Output Multilingua",
+        "desc": "Genera report in italiano, inglese e altre lingue — perfetto per i clienti locali."
+      },
+      "white_label": {
+        "title": "Pronto per il White-Label",
+        "desc": "Il nome della tua agenzia su ogni report. Il tuo brand, i tuoi clienti."
+      },
+      "auto_email": {
+        "title": "Consegna Automatica",
+        "desc": "I report vengono inviati automaticamente ai tuoi clienti via email al completamento."
+      },
+      "referrals": {
+        "title": "Premi per i Referral",
+        "desc": "Guadagna un mese gratuito per ogni agenzia che presenti e si abbona."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Bentornato",
+    "new_audit": "Nuovo Audit",
+    "recent_audits": "Audit Recenti",
+    "usage": "Questo Mese",
+    "audits_used": "Audit Utilizzati",
+    "of": "di",
+    "no_audits": "Nessun audit ancora. Esegui il tuo primo audit per iniziare.",
+    "stats": {
+      "total_audits": "Audit Totali",
+      "avg_score": "Punteggio Medio",
+      "critical_issues": "Problemi Critici",
+      "reports_sent": "Report Inviati"
+    }
+  },
+  "audit": {
+    "new_title": "Nuovo Audit SEO",
+    "url_label": "URL del Sito Web",
+    "url_placeholder": "https://esempio.it",
+    "client_name_label": "Nome del Cliente",
+    "client_name_placeholder": "Rossi S.r.l.",
+    "client_email_label": "Email del Cliente (per la consegna automatica)",
+    "client_email_placeholder": "cliente@esempio.it",
+    "language_label": "Lingua del Report",
+    "submit": "Avvia Audit",
+    "submitting": "Analisi in corso...",
+    "status": {
+      "pending": "In coda",
+      "running": "In analisi",
+      "completed": "Completato",
+      "failed": "Fallito"
+    },
+    "download_pdf": "Scarica PDF",
+    "view_report": "Visualizza Report",
+    "score": "Punteggio SEO",
+    "sections": {
+      "technical": "Tecnico",
+      "on_page": "On-Page",
+      "performance": "Prestazioni",
+      "mobile": "Mobile",
+      "security": "Sicurezza"
+    }
+  },
+  "pricing": {
+    "title": "Prezzi semplici e trasparenti",
+    "subtitle": "Scegli il piano più adatto alla tua agenzia. Cambia o annulla in qualsiasi momento.",
+    "monthly": "Mensile",
+    "per_month": "/ mese",
+    "current_plan": "Piano Attuale",
+    "choose_plan": "Scegli Piano",
+    "beta_offer": "🎉 Offerta Beta Tester: ricevi il tuo primo mese gratuito al lancio!",
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "price": "49",
+        "audits": "10 audit / mese",
+        "features": ["Raccomandazioni AI", "Report PDF", "Consegna via email", "Output multilingua", "Supporto via email"]
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "99",
+        "audits": "50 audit / mese",
+        "features": ["Tutto lo Starter", "Elaborazione prioritaria", "Report white-label", "Premi referral", "Supporto prioritario"]
+      },
+      "agency": {
+        "name": "Agency",
+        "price": "199",
+        "audits": "200 audit / mese",
+        "features": ["Tutto il Professional", "Clienti illimitati", "Accesso API", "Branding personalizzato", "Supporto dedicato"]
+      }
+    }
+  },
+  "auth": {
+    "login_title": "Bentornato",
+    "login_subtitle": "Accedi al tuo account",
+    "register_title": "Inizia la tua prova gratuita",
+    "register_subtitle": "14 giorni gratuiti, nessuna carta di credito richiesta",
+    "email": "Indirizzo email",
+    "password": "Password",
+    "full_name": "Nome completo",
+    "company_name": "Nome agenzia / azienda",
+    "preferred_language": "La tua lingua preferita",
+    "referral_code": "Codice referral (opzionale)",
+    "login_button": "Accedi",
+    "register_button": "Crea Account",
+    "no_account": "Non hai un account?",
+    "have_account": "Hai già un account?",
+    "sign_up": "Registrati",
+    "sign_in": "Accedi",
+    "forgot_password": "Password dimenticata?"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "profile": "Profilo",
+    "language": "Lingua Predefinita",
+    "language_desc": "Questa sarà la lingua predefinita per i nuovi report di audit. Puoi cambiarla per ogni singolo audit.",
+    "save": "Salva Modifiche",
+    "saved": "Salvato!",
+    "subscription": "Abbonamento",
+    "referrals": "Referral",
+    "refer_friend": "Invita un collega",
+    "refer_desc": "Guadagna un mese gratuito per ogni agenzia che si abbona tramite il tuo referral.",
+    "referral_link": "Il tuo codice referral",
+    "copy_link": "Copia",
+    "copied": "Copiato!",
+    "referrals_sent": "Referral inviati",
+    "referrals_converted": "Convertiti"
+  },
+  "common": {
+    "loading": "Caricamento...",
+    "error": "Qualcosa è andato storto",
+    "retry": "Riprova",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "back": "Indietro",
+    "next": "Avanti",
+    "close": "Chiudi",
+    "yes": "Sì",
+    "no": "No"
+  }
+}
