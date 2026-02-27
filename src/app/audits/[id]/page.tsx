@@ -37,6 +37,8 @@ export default function AuditDetailPage() {
 
   const [audit, setAudit] = useState<AuditDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -69,6 +71,29 @@ export default function AuditDetailPage() {
   );
 
   const isRunning = audit.status === "pending" || audit.status === "running";
+  const canDownload = !!audit.pdf_url && !downloading;
+
+  const handleDownload = async () => {
+    if (!audit) return;
+    setDownloading(true);
+    setDownloadError(null);
+    try {
+      const { blob, filename } = await audits.downloadPdf(audit.id);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Download failed";
+      setDownloadError(message);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -85,11 +110,19 @@ export default function AuditDetailPage() {
             <p className="text-gray-500 text-sm mt-1">{audit.url}</p>
           </div>
           {audit.pdf_url && (
-            <a href={audits.downloadUrl(audit.id)} className="btn-secondary" download>
-              ↓ {t.audit.download_pdf}
-            </a>
+            <button
+              type="button"
+              onClick={handleDownload}
+              className="btn-secondary"
+              disabled={!canDownload}
+            >
+              {downloading ? `${t.common.loading}...` : `↓ ${t.audit.download_pdf}`}
+            </button>
           )}
         </div>
+        {downloadError && (
+          <div className="text-sm text-red-600 mb-6">{downloadError}</div>
+        )}
 
         {isRunning && (
           <div className="card p-8 text-center mb-8">

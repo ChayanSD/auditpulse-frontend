@@ -8,6 +8,10 @@ function getAuthHeaders(): HeadersInit {
   };
 }
 
+function getAuthToken(): string | null {
+  return typeof window !== "undefined" ? localStorage.getItem("ap_token") : null;
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
@@ -126,6 +130,22 @@ export const audits = {
   get: (id: string) => request<AuditDetail>(`/audits/${id}`),
 
   downloadUrl: (id: string) => `${API_BASE}/audits/${id}/download`,
+
+  downloadPdf: async (id: string): Promise<{ blob: Blob; filename: string }> => {
+    const token = getAuthToken();
+    const res = await fetch(`${API_BASE}/audits/${id}/download`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ detail: "Unknown error" }));
+      throw new Error(error.detail || `Download failed: ${res.status}`);
+    }
+    const blob = await res.blob();
+    const disposition = res.headers.get("content-disposition") || "";
+    const match = disposition.match(/filename="([^"]+)"/i);
+    const filename = match?.[1] || `seo_audit_${id}.pdf`;
+    return { blob, filename };
+  },
 };
 
 // ─── Subscriptions ───────────────────────────────────────────────────────────
