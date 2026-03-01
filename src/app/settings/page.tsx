@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useI18n, SUPPORTED_LOCALES, SupportedLocale } from "@/hooks/useI18n";
+import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { LanguageSelect } from "@/components/LanguageSwitcher";
 import { auth, subscriptions, Subscription, Referral, LanguageOption } from "@/lib/api";
 
 export default function SettingsPage() {
   const { t, setLocale } = useI18n();
+  const { loading: authLoading } = useAuth();
   const [sub, setSub] = useState<Subscription | null>(null);
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [languages, setLanguages] = useState<LanguageOption[]>(
@@ -22,6 +24,8 @@ export default function SettingsPage() {
   const [referError, setReferError] = useState("");
 
   useEffect(() => {
+    if (authLoading) return;
+
     Promise.all([
       auth.me(),
       subscriptions.get(),
@@ -32,8 +36,8 @@ export default function SettingsPage() {
       setSub(s);
       setReferrals(refs);
       setLanguages(langs);
-    }).catch(() => {});
-  }, []);
+    }).catch(() => { });
+  }, [authLoading]);
 
   const handleSaveLanguage = async () => {
     setSaving(true);
@@ -70,9 +74,13 @@ export default function SettingsPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  if (authLoading) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50">{t.common.loading}</div>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar isLoggedIn />
+      <Navbar />
 
       <div className="max-w-2xl mx-auto px-4 py-12 space-y-8">
         <h1 className="text-2xl font-black text-gray-900">{t.settings.title}</h1>
@@ -147,9 +155,8 @@ export default function SettingsPage() {
                       {copied ? t.settings.copied : t.settings.copy_link} · {ref.referral_code}
                     </button>
                   </div>
-                  <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
-                    ref.is_converted ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"
-                  }`}>
+                  <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${ref.is_converted ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"
+                    }`}>
                     {ref.is_converted ? "Converted ✓" : "Pending"}
                   </span>
                 </div>

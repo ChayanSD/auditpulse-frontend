@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { I18nProvider } from "@/hooks/useI18n";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "AuditPulse — AI-Powered SEO Audits for Agencies",
@@ -12,7 +13,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <I18nProvider>
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </I18nProvider>
       </body>
     </html>

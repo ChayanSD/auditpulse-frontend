@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/hooks/useI18n";
+import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { LanguageSelect } from "@/components/LanguageSwitcher";
 import { audits, subscriptions, LanguageOption } from "@/lib/api";
 
 export default function NewAuditPage() {
   const { t } = useI18n();
+  const { loading: authLoading } = useAuth();
   const router = useRouter();
 
   const [url, setUrl] = useState("");
@@ -23,8 +25,9 @@ export default function NewAuditPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    subscriptions.getLanguages().then(setLanguages).catch(() => {});
-  }, []);
+    if (authLoading) return;
+    subscriptions.getLanguages().then(setLanguages).catch(() => { });
+  }, [authLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,9 +48,13 @@ export default function NewAuditPage() {
     }
   };
 
+  if (authLoading) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50">{t.common.loading}</div>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar isLoggedIn />
+      <Navbar />
 
       <div className="max-w-2xl mx-auto px-4 py-12">
         <div className="mb-8">

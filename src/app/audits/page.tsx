@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/hooks/useI18n";
+import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { audits, Audit } from "@/lib/api";
 
@@ -33,21 +34,27 @@ function StatusBadge({ status }: { status: Audit["status"] }) {
 
 export default function AuditsPage() {
   const { t } = useI18n();
+  const { loading: authLoading } = useAuth();
   const [auditList, setAuditList] = useState<Audit[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const limit = 20;
 
   useEffect(() => {
+    if (authLoading) return;
     audits.list(page * limit, limit)
       .then(setAuditList)
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
-  }, [page]);
+  }, [page, authLoading]);
+
+  if (authLoading) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50">{t.common.loading}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar isLoggedIn />
+      <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-center justify-between mb-8">

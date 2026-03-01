@@ -4,12 +4,13 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useI18n, SUPPORTED_LOCALES } from "@/hooks/useI18n";
+import { useAuth } from "@/context/AuthContext";
 import { LanguageSelect } from "@/components/LanguageSwitcher";
 import { auth, subscriptions, LanguageOption } from "@/lib/api";
 
 function RegisterForm() {
   const { t } = useI18n();
-  const router = useRouter();
+  const { login } = useAuth();
   const searchParams = useSearchParams();
 
   const [fullName, setFullName] = useState("");
@@ -25,7 +26,7 @@ function RegisterForm() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    subscriptions.getLanguages().then(setLanguages).catch(() => {});
+    subscriptions.getLanguages().then(setLanguages).catch(() => { });
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,8 +42,7 @@ function RegisterForm() {
         preferred_language: preferredLanguage,
         referral_code: referralCode || undefined,
       });
-      localStorage.setItem("ap_token", data.access_token);
-      router.push("/dashboard");
+      login(data.access_token, data.user);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t.common.error);
       setLoading(false);

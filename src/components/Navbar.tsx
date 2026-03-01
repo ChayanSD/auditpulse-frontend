@@ -2,20 +2,24 @@
 
 import Link from "next/link";
 import { useI18n } from "@/hooks/useI18n";
+import { useAuth } from "@/context/AuthContext";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { usePathname } from "next/navigation";
 
-export function Navbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
+export function Navbar() {
   const { t } = useI18n();
+  const { user, logout } = useAuth();
   const pathname = usePathname();
+
+  const isLoggedIn = !!user;
 
   const navLinks = isLoggedIn
     ? [
-        { href: "/dashboard", label: t.nav.dashboard },
-        { href: "/audits", label: t.nav.audits },
-        { href: "/pricing", label: t.nav.pricing },
-        { href: "/settings", label: t.nav.settings },
-      ]
+      { href: "/dashboard", label: t.nav.dashboard },
+      { href: "/audits", label: t.nav.audits },
+      { href: "/pricing", label: t.nav.pricing },
+      { href: "/settings", label: t.nav.settings },
+    ]
     : [{ href: "/pricing", label: t.nav.pricing }];
 
   return (
@@ -33,11 +37,10 @@ export function Navbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-colors ${
-                  pathname === link.href
-                    ? "text-indigo-600"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
+                className={`text-sm font-medium transition-colors ${pathname === link.href
+                  ? "text-indigo-600"
+                  : "text-gray-600 hover:text-gray-900"
+                  }`}
               >
                 {link.label}
               </Link>
@@ -49,10 +52,7 @@ export function Navbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
             <LanguageSwitcher />
             {isLoggedIn ? (
               <button
-                onClick={() => {
-                  localStorage.removeItem("ap_token");
-                  window.location.href = "/login";
-                }}
+                onClick={logout}
                 className="text-sm text-gray-600 hover:text-gray-900"
               >
                 {t.nav.logout}

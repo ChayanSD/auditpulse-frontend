@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useI18n } from "@/hooks/useI18n";
+import { useAuth } from "@/context/AuthContext";
 import { auth } from "@/lib/api";
 
 export default function LoginPage() {
   const { t } = useI18n();
-  const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,8 +21,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const data = await auth.login({ username: email, password });
-      localStorage.setItem("ap_token", data.access_token);
-      router.push("/dashboard");
+      login(data.access_token, data.user);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t.common.error);
       setLoading(false);

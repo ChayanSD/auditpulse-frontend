@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/hooks/useI18n";
+import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { audits, subscriptions, Audit, Subscription } from "@/lib/api";
 
@@ -33,20 +34,27 @@ function StatusBadge({ status }: { status: Audit["status"] }) {
 
 export default function DashboardPage() {
   const { t } = useI18n();
+  const { loading: authLoading } = useAuth();
   const [auditList, setAuditList] = useState<Audit[]>([]);
   const [sub, setSub] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+
     Promise.all([audits.list(), subscriptions.get()])
       .then(([list, s]) => { setAuditList(list); setSub(s); })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
-  }, []);
+  }, [authLoading]);
+
+  if (authLoading) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50">{t.common.loading}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar isLoggedIn />
+      <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Header */}

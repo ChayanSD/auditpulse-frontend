@@ -12,7 +12,7 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar isLoggedIn={false} />
+      <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 py-20">
         <div className="text-center mb-14">
@@ -33,9 +33,8 @@ export default function PricingPage() {
             return (
               <div
                 key={planKey}
-                className={`card p-8 relative ${
-                  isPopular ? "border-2 border-indigo-600 shadow-xl" : ""
-                }`}
+                className={`card p-8 relative ${isPopular ? "border-2 border-indigo-600 shadow-xl" : ""
+                  }`}
               >
                 {isPopular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-4 py-1 rounded-full">
@@ -61,11 +60,10 @@ export default function PricingPage() {
 
                 <Link
                   href="/register"
-                  className={`block text-center py-3 px-6 rounded-xl font-semibold transition-colors ${
-                    isPopular
+                  className={`block text-center py-3 px-6 rounded-xl font-semibold transition-colors ${isPopular
                       ? "bg-indigo-600 text-white hover:bg-indigo-700"
                       : "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                  }`}
+                    }`}
                 >
                   {t.pricing.choose_plan}
                 </Link>

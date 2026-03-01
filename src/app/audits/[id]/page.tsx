@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useI18n } from "@/hooks/useI18n";
+import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { audits, AuditDetail } from "@/lib/api";
 
@@ -32,6 +33,7 @@ function ScoreRing({ score, label }: { score: number; label: string }) {
 
 export default function AuditDetailPage() {
   const { t } = useI18n();
+  const { loading: authLoading } = useAuth();
   const params = useParams();
   const id = params.id as string;
 
@@ -41,6 +43,8 @@ export default function AuditDetailPage() {
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (authLoading) return;
+
     const load = async () => {
       try {
         const data = await audits.get(id);
@@ -56,16 +60,16 @@ export default function AuditDetailPage() {
       }
     };
     load();
-  }, [id]);
+  }, [id, authLoading]);
 
-  if (loading) return (
-    <div className="min-h-screen bg-gray-50"><Navbar isLoggedIn />
+  if (authLoading) {
+    return <div className="min-h-screen bg-gray-50"><Navbar />
       <div className="flex items-center justify-center h-96 text-gray-400">{t.common.loading}</div>
-    </div>
-  );
+    </div>;
+  }
 
   if (!audit) return (
-    <div className="min-h-screen bg-gray-50"><Navbar isLoggedIn />
+    <div className="min-h-screen bg-gray-50"><Navbar />
       <div className="max-w-2xl mx-auto px-4 py-20 text-center text-gray-500">{t.common.error}</div>
     </div>
   );
@@ -97,7 +101,7 @@ export default function AuditDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar isLoggedIn />
+      <Navbar />
 
       <div className="max-w-5xl mx-auto px-4 py-10">
         {/* Header */}
@@ -163,9 +167,8 @@ export default function AuditDetailPage() {
                     <div key={i} className="bg-gray-50 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-semibold text-sm text-gray-900">{rec.title}</span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                          rec.impact === "high" ? "badge-critical" : rec.impact === "medium" ? "badge-warning" : "badge-info"
-                        }`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${rec.impact === "high" ? "badge-critical" : rec.impact === "medium" ? "badge-warning" : "badge-info"
+                          }`}>
                           {rec.impact}
                         </span>
                       </div>
