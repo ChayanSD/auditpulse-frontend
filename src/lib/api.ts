@@ -110,13 +110,47 @@ export interface AuditDetail extends Audit {
   raw_results?: Record<string, unknown>;
   ai_recommendations?: {
     executive_summary?: string;
+    business_impact?: {
+      headline?: string;
+      traffic_opportunity?: string;
+      priority_issue_impact?: { issue?: string; consequence?: string; fix_impact?: string };
+    };
+    quick_wins?: Array<{
+      title: string;
+      what_to_do: string;
+      time_to_implement: string;
+      expected_impact: string;
+    }>;
     priority_recommendations?: Array<{
       title: string;
       description: string;
+      suggested_copy?: string | null;
       impact: "high" | "medium" | "low";
       effort: "high" | "medium" | "low";
+      estimated_time?: string;
     }>;
+    keyword_opportunities?: Array<{
+      keyword: string;
+      rationale: string;
+      monthly_searches: string;
+      difficulty: "low" | "medium" | "high";
+      recommended_action: string;
+    }>;
+    content_recommendations?: Array<{
+      title: string;
+      current_state: string;
+      recommendation: string;
+      seo_benefit: string;
+    }>;
+    competitive_context?: string;
+    action_plan?: {
+      week_1?: { focus: string; tasks: string[] };
+      week_2?: { focus: string; tasks: string[] };
+      week_3?: { focus: string; tasks: string[] };
+      week_4?: { focus: string; tasks: string[] };
+    };
     section_narratives?: Record<string, string>;
+    long_term_strategy?: string;
   };
 }
 
