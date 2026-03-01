@@ -15,11 +15,10 @@ export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
         <button
           key={code}
           onClick={() => setLocale(code as SupportedLocale)}
-          className={`px-2 py-1 text-sm rounded transition-colors ${
-            locale === code
-              ? "bg-indigo-600 text-white font-semibold"
-              : "text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-          }`}
+          className={`px-2 py-1 text-sm rounded transition-colors ${locale === code
+            ? "bg-indigo-600 text-white font-semibold"
+            : "text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+            }`}
           title={name}
         >
           {code.toUpperCase()}
@@ -47,11 +46,11 @@ export function LanguageSelect({
 }) {
   return (
     <div>
-      {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
+      {label && <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        className="input bg-white cursor-pointer"
       >
         {options.map((opt) => (
           <option key={opt.code} value={opt.code}>
