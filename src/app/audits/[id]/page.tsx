@@ -39,28 +39,47 @@ export default function AuditDetailPage() {
 
   const [audit, setAudit] = useState<AuditDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
+    if (!id) return;
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
-    const load = async () => {
+    const load = async (attempt = 0) => {
       try {
         const data = await audits.get(id);
+        if (cancelled) return;
         setAudit(data);
+        setLoadError(null);
         // Poll while running
         if (data.status === "pending" || data.status === "running") {
-          setTimeout(load, 4000);
+          retryTimer = setTimeout(() => {
+            void load(0);
+          }, 4000);
         }
       } catch {
-        setLoading(false);
+        if (cancelled) return;
+        if (attempt < 2) {
+          retryTimer = setTimeout(() => {
+            void load(attempt + 1);
+          }, 1200);
+          return;
+        }
+        setLoadError(t.common.error);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
-    load();
-  }, [id, authLoading]);
+    void load();
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+    };
+  }, [id, authLoading, t.common.error]);
 
   if (authLoading) {
     return <div className="min-h-screen bg-gray-50"><Navbar />
@@ -68,9 +87,15 @@ export default function AuditDetailPage() {
     </div>;
   }
 
+  if (loading) {
+    return <div className="min-h-screen bg-gray-50"><Navbar />
+      <div className="flex items-center justify-center h-96 text-gray-400">{t.common.loading}</div>
+    </div>;
+  }
+
   if (!audit) return (
     <div className="min-h-screen bg-gray-50"><Navbar />
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center text-gray-500">{t.common.error}</div>
+      <div className="max-w-2xl mx-auto px-4 py-20 text-center text-gray-500">{loadError || t.common.error}</div>
     </div>
   );
 
