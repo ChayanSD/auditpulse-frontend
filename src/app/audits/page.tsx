@@ -37,16 +37,43 @@ export default function AuditsPage() {
   const { loading: authLoading } = useAuth();
   const [auditList, setAuditList] = useState<Audit[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const limit = 20;
 
   useEffect(() => {
     if (authLoading) return;
-    audits.list(page * limit, limit)
-      .then(setAuditList)
-      .catch(() => { })
-      .finally(() => setLoading(false));
-  }, [page, authLoading]);
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const load = async () => {
+      try {
+        const list = await audits.list(page * limit, limit);
+        if (cancelled) return;
+        setAuditList(list);
+        setError(null);
+
+        // Keep list fresh while any audit is in progress.
+        if (list.some((audit) => audit.status === "pending" || audit.status === "running")) {
+          timer = setTimeout(() => {
+            void load();
+          }, 4000);
+        }
+      } catch (err) {
+        if (cancelled) return;
+        console.error("Failed to load audits list:", err);
+        setError(t.common.error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void load();
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [page, authLoading, t.common.error]);
 
   if (authLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50">{t.common.loading}</div>;
@@ -57,12 +84,18 @@ export default function AuditsPage() {
       <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-black text-gray-900">{t.nav.audits}</h1>
-          <Link href="/audits/new" className="btn-primary">
+          <Link href="/audits/new" className="btn-primary w-full justify-center sm:w-auto">
             + {t.dashboard.new_audit}
           </Link>
         </div>
+
+        {error && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
 
         <div className="card overflow-hidden">
           {loading ? (
@@ -74,7 +107,29 @@ export default function AuditsPage() {
             </div>
           ) : (
             <>
-              <table className="w-full">
+              <div className="divide-y divide-gray-100 md:hidden">
+                {auditList.map((audit) => (
+                  <div key={audit.id} className="px-4 py-4">
+                    <div className="flex items-start gap-3">
+                      <ScoreBadge score={audit.overall_score} />
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-medium text-gray-900">{audit.client_name || audit.url}</div>
+                        {audit.client_name && <div className="mt-0.5 truncate text-xs text-gray-400">{audit.url}</div>}
+                      </div>
+                    </div>
+                    <div className="mt-3 flex flex-wrap items-center gap-2.5">
+                      <span className="text-xs font-medium uppercase text-gray-500">{audit.output_language}</span>
+                      <StatusBadge status={audit.status} />
+                      <span className="text-xs text-gray-500">{new Date(audit.created_at).toLocaleDateString()}</span>
+                      <Link href={`/audits/${audit.id}`} className="ml-auto text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                        {t.audit.view_report} →
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <table className="hidden w-full md:table">
                 <thead>
                   <tr className="border-b border-gray-200 bg-gray-50">
                     <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Score</th>
@@ -115,11 +170,11 @@ export default function AuditsPage() {
               </table>
 
               {auditList.length === limit && (
-                <div className="flex justify-center gap-3 p-4 border-t border-gray-200">
-                  <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="btn-secondary text-sm py-1.5 px-4">
+                <div className="flex flex-col justify-center gap-2 border-t border-gray-200 p-4 sm:flex-row sm:gap-3">
+                  <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="btn-secondary px-4 py-1.5 text-sm">
                     ← Prev
                   </button>
-                  <button onClick={() => setPage(p => p + 1)} className="btn-secondary text-sm py-1.5 px-4">
+                  <button onClick={() => setPage(p => p + 1)} className="btn-secondary px-4 py-1.5 text-sm">
                     Next →
                   </button>
                 </div>

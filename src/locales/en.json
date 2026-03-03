@@ -64,6 +64,7 @@
     "new_title": "New SEO Audit",
     "url_label": "Website URL",
     "url_placeholder": "https://example.com",
+    "invalid_url": "Please enter a valid website URL (e.g. https://example.com)",
     "client_name_label": "Client Name",
     "client_name_placeholder": "Acme S.r.l.",
     "client_email_label": "Client Email (for automatic delivery)",
@@ -94,7 +95,11 @@
     "monthly": "Monthly",
     "per_month": "/ month",
     "current_plan": "Current Plan",
+    "trialing_plan": "Current Plan (Trial)",
+    "trial_until": "Free trial active until {date}",
+    "trial_note": "You are currently not charged. Billing starts after trial.",
     "choose_plan": "Choose Plan",
+    "manage_plan": "Manage Plan",
     "beta_offer": "🎉 Beta Tester Offer: Get your first month free at launch!",
     "plans": {
       "starter": {

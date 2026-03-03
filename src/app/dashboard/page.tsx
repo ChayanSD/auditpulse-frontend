@@ -58,11 +58,11 @@ export default function DashboardPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-black text-gray-900">{t.dashboard.title}</h1>
           </div>
-          <Link href="/audits/new" className="btn-primary">
+          <Link href="/audits/new" className="btn-primary w-full justify-center sm:w-auto">
             + {t.dashboard.new_audit}
           </Link>
         </div>
@@ -119,18 +119,18 @@ export default function DashboardPage() {
           ) : (
             <div className="divide-y divide-gray-100">
               {auditList.map((audit) => (
-                <div key={audit.id} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center gap-4">
+                <div key={audit.id} className="px-4 py-4 transition-colors hover:bg-gray-50 sm:px-6">
+                  <div className="flex items-start gap-3 sm:items-center sm:gap-4">
                     <ScoreBadge score={audit.overall_score} />
-                    <div>
-                      <div className="font-medium text-gray-900 text-sm">{audit.client_name || audit.url}</div>
-                      <div className="text-xs text-gray-400 mt-0.5">{audit.url}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-medium text-gray-900">{audit.client_name || audit.url}</div>
+                      <div className="mt-0.5 truncate text-xs text-gray-400">{audit.url}</div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-xs text-gray-400 uppercase font-medium">{audit.output_language}</span>
+                  <div className="mt-3 flex flex-wrap items-center gap-2.5 sm:mt-0 sm:justify-end sm:gap-4">
+                    <span className="text-xs font-medium uppercase text-gray-400">{audit.output_language}</span>
                     <StatusBadge status={audit.status} />
-                    <Link href={`/audits/${audit.id}`} className="text-indigo-600 text-sm font-medium hover:text-indigo-700">
+                    <Link href={`/audits/${audit.id}`} className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
                       {t.audit.view_report} →
                     </Link>
                   </div>

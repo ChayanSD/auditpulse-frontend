@@ -64,6 +64,7 @@
     "new_title": "Nuovo Audit SEO",
     "url_label": "URL del Sito Web",
     "url_placeholder": "https://esempio.it",
+    "invalid_url": "Inserisci un URL valido del sito web (es. https://esempio.it)",
     "client_name_label": "Nome del Cliente",
     "client_name_placeholder": "Rossi S.r.l.",
     "client_email_label": "Email del Cliente (per la consegna automatica)",
@@ -94,7 +95,11 @@
     "monthly": "Mensile",
     "per_month": "/ mese",
     "current_plan": "Piano Attuale",
+    "trialing_plan": "Piano Attuale (Prova)",
+    "trial_until": "Prova gratuita attiva fino al {date}",
+    "trial_note": "Al momento non ti viene addebitato nulla. La fatturazione inizia dopo la prova.",
     "choose_plan": "Scegli Piano",
+    "manage_plan": "Gestisci Piano",
     "beta_offer": "🎉 Offerta Beta Tester: ricevi il tuo primo mese gratuito al lancio!",
     "plans": {
       "starter": {
