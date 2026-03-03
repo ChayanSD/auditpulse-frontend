@@ -3,10 +3,11 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useI18n, SUPPORTED_LOCALES } from "@/hooks/useI18n";
+import { useI18n } from "@/hooks/useI18n";
 import { useAuth } from "@/context/AuthContext";
 import { LanguageSelect } from "@/components/LanguageSwitcher";
 import { auth, subscriptions, LanguageOption } from "@/lib/api";
+import { DEFAULT_REPORT_LANGUAGES, mergeLanguageOptions } from "@/lib/languages";
 
 function RegisterForm() {
   const { t } = useI18n();
@@ -20,13 +21,23 @@ function RegisterForm() {
   const [preferredLanguage, setPreferredLanguage] = useState("en");
   const [referralCode, setReferralCode] = useState(searchParams.get("ref") || "");
   const [languages, setLanguages] = useState<LanguageOption[]>(
-    SUPPORTED_LOCALES.map(l => ({ code: l.code, name: l.name }))
+    mergeLanguageOptions([], DEFAULT_REPORT_LANGUAGES)
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    subscriptions.getLanguages().then(setLanguages).catch(() => { });
+    subscriptions.getLanguages()
+      .then((apiLanguages) => {
+        const merged = mergeLanguageOptions(apiLanguages, DEFAULT_REPORT_LANGUAGES);
+        setLanguages(merged);
+        setPreferredLanguage((current) =>
+          merged.some((lang) => lang.code === current) ? current : (merged[0]?.code || "en")
+        );
+      })
+      .catch(() => {
+        setLanguages(mergeLanguageOptions([], DEFAULT_REPORT_LANGUAGES));
+      });
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

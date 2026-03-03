@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useI18n, SUPPORTED_LOCALES, SupportedLocale } from "@/hooks/useI18n";
+import { useI18n, SupportedLocale } from "@/hooks/useI18n";
 import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { LanguageSelect } from "@/components/LanguageSwitcher";
 import { auth, subscriptions, Subscription, Referral, LanguageOption } from "@/lib/api";
+import { DEFAULT_REPORT_LANGUAGES, mergeLanguageOptions } from "@/lib/languages";
 
 export default function SettingsPage() {
   const { t, setLocale } = useI18n();
@@ -13,7 +14,7 @@ export default function SettingsPage() {
   const [sub, setSub] = useState<Subscription | null>(null);
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [languages, setLanguages] = useState<LanguageOption[]>(
-    SUPPORTED_LOCALES.map(l => ({ code: l.code, name: l.name }))
+    mergeLanguageOptions([], DEFAULT_REPORT_LANGUAGES)
   );
   const [preferredLanguage, setPreferredLanguage] = useState("en");
   const [referEmail, setReferEmail] = useState("");
@@ -32,10 +33,14 @@ export default function SettingsPage() {
       subscriptions.listReferrals(),
       subscriptions.getLanguages(),
     ]).then(([user, s, refs, langs]) => {
+      const mergedLangs = mergeLanguageOptions(langs, DEFAULT_REPORT_LANGUAGES);
       setPreferredLanguage(user.preferred_language);
       setSub(s);
       setReferrals(refs);
-      setLanguages(langs);
+      setLanguages(mergedLangs);
+      if (!mergedLangs.some((lang) => lang.code === user.preferred_language)) {
+        setPreferredLanguage(mergedLangs[0]?.code || "en");
+      }
     }).catch(() => { });
   }, [authLoading]);
 

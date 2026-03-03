@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { LanguageSelect } from "@/components/LanguageSwitcher";
 import { audits, subscriptions, LanguageOption } from "@/lib/api";
+import { DEFAULT_REPORT_LANGUAGES, mergeLanguageOptions } from "@/lib/languages";
 
 export default function NewAuditPage() {
   const { t } = useI18n();
@@ -17,16 +18,23 @@ export default function NewAuditPage() {
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [outputLanguage, setOutputLanguage] = useState("en");
-  const [languages, setLanguages] = useState<LanguageOption[]>([
-    { code: "en", name: "English" },
-    { code: "it", name: "Italiano" },
-  ]);
+  const [languages, setLanguages] = useState<LanguageOption[]>(DEFAULT_REPORT_LANGUAGES);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (authLoading) return;
-    subscriptions.getLanguages().then(setLanguages).catch(() => { });
+    subscriptions.getLanguages()
+      .then((apiLanguages) => {
+        const merged = mergeLanguageOptions(apiLanguages, DEFAULT_REPORT_LANGUAGES);
+        setLanguages(merged);
+        setOutputLanguage((current) =>
+          merged.some((lang) => lang.code === current) ? current : (merged[0]?.code || "en")
+        );
+      })
+      .catch(() => {
+        setLanguages(DEFAULT_REPORT_LANGUAGES);
+      });
   }, [authLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
