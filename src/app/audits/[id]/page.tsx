@@ -42,6 +42,7 @@ export default function AuditDetailPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (authLoading) return;
@@ -61,8 +62,9 @@ export default function AuditDetailPage() {
             void load(0);
           }, 4000);
         }
-      } catch {
+      } catch (err) {
         if (cancelled) return;
+        console.error(`Failed to load audit ${id}:`, err);
         if (attempt < 2) {
           retryTimer = setTimeout(() => {
             void load(attempt + 1);
@@ -79,7 +81,7 @@ export default function AuditDetailPage() {
       cancelled = true;
       if (retryTimer) clearTimeout(retryTimer);
     };
-  }, [id, authLoading, t.common.error]);
+  }, [id, authLoading, t.common.error, reloadKey]);
 
   if (authLoading) {
     return <div className="min-h-screen bg-gray-50"><Navbar />
@@ -117,6 +119,7 @@ export default function AuditDetailPage() {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
+      console.error(`Failed to download audit ${audit.id} PDF:`, err);
       const message = err instanceof Error ? err.message : "Download failed";
       setDownloadError(message);
     } finally {
@@ -132,7 +135,7 @@ export default function AuditDetailPage() {
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
           <div>
-            <Link href="/dashboard" className="text-sm text-indigo-600 hover:text-indigo-700 mb-2 inline-block">
+            <Link href="/audits" className="text-sm text-indigo-600 hover:text-indigo-700 mb-2 inline-block">
               ← {t.common.back}
             </Link>
             <h1 className="text-2xl font-black text-gray-900">{audit.client_name || audit.url}</h1>
@@ -375,6 +378,16 @@ export default function AuditDetailPage() {
           <div className="card p-8 text-center border-red-200">
             <p className="text-red-600 font-semibold">Audit failed</p>
             {audit.error_message && <p className="text-sm text-gray-500 mt-1">{audit.error_message}</p>}
+            <button
+              type="button"
+              onClick={() => {
+                setLoading(true);
+                setReloadKey((k) => k + 1);
+              }}
+              className="btn-secondary mt-4"
+            >
+              Retry loading
+            </button>
           </div>
         )}
       </div>

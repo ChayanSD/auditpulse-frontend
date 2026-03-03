@@ -7,6 +7,27 @@ import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { LanguageSelect } from "@/components/LanguageSwitcher";
 import { audits, subscriptions, LanguageOption } from "@/lib/api";
+import { DEFAULT_REPORT_LANGUAGES, mergeLanguageOptions } from "@/lib/languages";
+
+function isValidAuditUrl(value: string): boolean {
+  const raw = value.trim();
+  if (!raw) return false;
+
+  const normalized = raw.startsWith("http://") || raw.startsWith("https://")
+    ? raw
+    : `https://${raw}`;
+
+  try {
+    const parsed = new URL(normalized);
+    return (
+      (parsed.protocol === "http:" || parsed.protocol === "https:") &&
+      !!parsed.hostname &&
+      parsed.hostname.includes(".")
+    );
+  } catch {
+    return false;
+  }
+}
 
 export default function NewAuditPage() {
   const { t } = useI18n();
@@ -17,26 +38,39 @@ export default function NewAuditPage() {
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [outputLanguage, setOutputLanguage] = useState("en");
-  const [languages, setLanguages] = useState<LanguageOption[]>([
-    { code: "en", name: "English" },
-    { code: "it", name: "Italiano" },
-  ]);
+  const [languages, setLanguages] = useState<LanguageOption[]>(DEFAULT_REPORT_LANGUAGES);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (authLoading) return;
-    subscriptions.getLanguages().then(setLanguages).catch(() => { });
+    subscriptions.getLanguages()
+      .then((apiLanguages) => {
+        const merged = mergeLanguageOptions(apiLanguages, DEFAULT_REPORT_LANGUAGES);
+        setLanguages(merged);
+        setOutputLanguage((current) =>
+          merged.some((lang) => lang.code === current) ? current : (merged[0]?.code || "en")
+        );
+      })
+      .catch(() => {
+        setLanguages(DEFAULT_REPORT_LANGUAGES);
+      });
   }, [authLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (!isValidAuditUrl(url)) {
+      setError(t.audit.invalid_url);
+      return;
+    }
+
     setSubmitting(true);
 
     try {
       const audit = await audits.create({
-        url,
+        url: url.trim(),
         client_name: clientName || undefined,
         client_email: clientEmail || undefined,
         output_language: outputLanguage,
@@ -67,7 +101,7 @@ export default function NewAuditPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">{t.audit.url_label}</label>
               <input
-                type="text"
+                type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder={t.audit.url_placeholder}

@@ -48,23 +48,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (!token && !isPublicPath) {
             // Not logged in and trying to access a protected page
-            router.push("/login");
+            router.replace("/login");
         } else if (token && isPublicPath && pathname !== "/") {
             // Logged in and trying to access login/register
-            router.push("/dashboard");
+            router.replace("/dashboard");
         }
     }, [loading, pathname, user, router]);
 
     const login = (token: string, userProfile: UserProfile) => {
         localStorage.setItem("ap_token", token);
         setUser(userProfile);
-        router.push("/dashboard");
+        router.replace("/dashboard");
     };
 
     const logout = () => {
         localStorage.removeItem("ap_token");
         setUser(null);
-        router.push("/login");
+        router.replace("/login");
     };
 
     const refreshUser = async () => {
