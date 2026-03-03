@@ -101,7 +101,8 @@ export default function NewAuditPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">{t.audit.url_label}</label>
               <input
-                type="url"
+                type="text"
+                inputMode="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder={t.audit.url_placeholder}
