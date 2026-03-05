@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Logged in and trying to access login/register
             router.replace("/dashboard");
         }
-    }, [loading, pathname, user, router]);
+    }, [loading, pathname, router]);
 
     const login = (token: string, userProfile: UserProfile) => {
         localStorage.setItem("ap_token", token);
