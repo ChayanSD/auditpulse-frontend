@@ -87,7 +87,36 @@
       "performance": "Prestazioni",
       "mobile": "Mobile",
       "security": "Sicurezza"
-    }
+    },
+    "tabs": {
+      "overview": "Panoramica",
+      "recommendations": "Raccomandazioni",
+      "content": "Contenuti e Parole Chiave",
+      "strategy": "Strategia",
+      "competitive": "Competitivo"
+    },
+    "errors": {
+      "passwords_mismatch": "Le password non corrispondono",
+      "download_failed": "Download non riuscito"
+    },
+    "analyzing_steps": {
+      "connecting": "Connessione al sito web",
+      "connecting_detail": "Stabilimento di una connessione sicura…",
+      "crawling": "Scansione delle pagine e della struttura",
+      "crawling_detail": "Analisi dell'architettura del sito e dei link interni…",
+      "on_page": "Analisi SEO on-page",
+      "on_page_detail": "Valutazione di meta tag, intestazioni e contenuti…",
+      "technical": "Controllo della salute tecnica",
+      "technical_detail": "Ispezione di robots.txt, sitemap e schema markup…",
+      "performance": "Valutazione delle prestazioni",
+      "performance_detail": "Misurazione di velocità, Core Web Vitals e UX mobile…",
+      "ai_analysis": "Analisi AI in corso",
+      "ai_analysis_detail": "L'AI Claude sta generando raccomandazioni personalizzate…",
+      "building": "Creazione del report",
+      "building_detail": "Compilazione dei risultati in un PDF professionale…"
+    },
+    "analyzing_progress": "Progresso",
+    "analyzing_warning": "Non chiudere questa pagina — il tuo audit è in fase di generazione"
   },
   "pricing": {
     "title": "Prezzi semplici e trasparenti",
@@ -174,7 +203,8 @@
     "copy_link": "Copia",
     "copied": "Copiato!",
     "referrals_sent": "Referral inviati",
-    "referrals_converted": "Convertiti"
+    "referrals_converted": "Convertiti",
+    "referral_sent_success": "Invito referral inviato!"
   },
   "common": {
     "loading": "Caricamento...",

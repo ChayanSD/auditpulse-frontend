@@ -29,7 +29,7 @@ import { toast } from "sonner";
 
 export default function SettingsPage() {
   const { t, setLocale } = useI18n();
-  const { loading: authLoading } = useAuth();
+  const { loading: authLoading, refreshUser } = useAuth();
   const queryClient = useQueryClient();
 
   const enabled = !authLoading;
@@ -64,6 +64,10 @@ export default function SettingsPage() {
     setSaving(true);
     try {
       await auth.updateMe({ preferred_language: preferredLanguage });
+      // Invalidate cached user data so it refetches with the updated profile
+      await queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
+      // Also refresh the AuthContext user state
+      await refreshUser();
       setLocale(preferredLanguage as SupportedLocale);
       toast.success(t.settings.saved);
     } catch (err: unknown) {
@@ -83,7 +87,7 @@ export default function SettingsPage() {
         queryKey: queryKeys.subscriptions.referrals(),
       });
       setReferEmail("");
-      toast.success("Referral invitation sent!");
+      toast.success(t.settings.referral_sent_success);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : t.common.error;
       setReferError(msg);

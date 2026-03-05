@@ -7,7 +7,6 @@ export function useSubscription(enabled = true) {
         queryKey: queryKeys.subscriptions.details(),
         queryFn: () => subscriptions.get(),
         enabled,
-        staleTime: 1000 * 60 * 10, // 10 minutes
     });
 }
 
@@ -33,6 +32,5 @@ export function useCurrentUser(enabled = true) {
         queryKey: queryKeys.auth.user(),
         queryFn: () => auth.me(),
         enabled,
-        staleTime: 1000 * 60 * 10,
     });
 }

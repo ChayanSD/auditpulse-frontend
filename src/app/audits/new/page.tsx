@@ -9,6 +9,7 @@ import { LanguageSelect } from "@/components/LanguageSwitcher";
 import { audits } from "@/lib/api";
 import { DEFAULT_REPORT_LANGUAGES, mergeLanguageOptions } from "@/lib/languages";
 import { useLanguages } from "@/hooks/queries/useSubscriptions";
+import { queryClient, queryKeys } from "@/lib/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -78,6 +79,9 @@ export default function NewAuditPage() {
         client_email: clientEmail || undefined,
         output_language: outputLanguage,
       });
+      // Invalidate audits list & subscription usage so they refetch with fresh data
+      queryClient.invalidateQueries({ queryKey: queryKeys.audits.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscriptions.details() });
       router.push(`/audits/${audit.id}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : t.common.error;
