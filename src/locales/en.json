@@ -106,19 +106,37 @@
         "name": "Starter",
         "price": "49",
         "audits": "10 audits / month",
-        "features": ["AI-powered recommendations", "PDF reports", "Email delivery", "Multi-language output", "Email support"]
+        "features": [
+          "AI-powered recommendations",
+          "PDF reports",
+          "Email delivery",
+          "Multi-language output",
+          "Email support"
+        ]
       },
       "professional": {
         "name": "Professional",
         "price": "99",
         "audits": "50 audits / month",
-        "features": ["Everything in Starter", "Priority processing", "White-label reports", "Referral rewards", "Priority support"]
+        "features": [
+          "Everything in Starter",
+          "Priority processing",
+          "White-label reports",
+          "Referral rewards",
+          "Priority support"
+        ]
       },
       "agency": {
         "name": "Agency",
         "price": "199",
         "audits": "200 audits / month",
-        "features": ["Everything in Professional", "Unlimited clients", "API access", "Custom branding", "Dedicated support"]
+        "features": [
+          "Everything in Professional",
+          "Unlimited clients",
+          "API access",
+          "Custom branding",
+          "Dedicated support"
+        ]
       }
     }
   },

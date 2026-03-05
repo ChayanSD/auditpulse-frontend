@@ -106,19 +106,37 @@
         "name": "Starter",
         "price": "49",
         "audits": "10 audit / mese",
-        "features": ["Raccomandazioni AI", "Report PDF", "Consegna via email", "Output multilingua", "Supporto via email"]
+        "features": [
+          "Raccomandazioni AI",
+          "Report PDF",
+          "Consegna via email",
+          "Output multilingua",
+          "Supporto via email"
+        ]
       },
       "professional": {
         "name": "Professional",
         "price": "99",
         "audits": "50 audit / mese",
-        "features": ["Tutto lo Starter", "Elaborazione prioritaria", "Report white-label", "Premi referral", "Supporto prioritario"]
+        "features": [
+          "Tutto lo Starter",
+          "Elaborazione prioritaria",
+          "Report white-label",
+          "Premi referral",
+          "Supporto prioritario"
+        ]
       },
       "agency": {
         "name": "Agency",
         "price": "199",
         "audits": "200 audit / mese",
-        "features": ["Tutto il Professional", "Clienti illimitati", "Accesso API", "Branding personalizzato", "Supporto dedicato"]
+        "features": [
+          "Tutto il Professional",
+          "Clienti illimitati",
+          "Accesso API",
+          "Branding personalizzato",
+          "Supporto dedicato"
+        ]
       }
     }
   },
