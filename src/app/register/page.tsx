@@ -112,7 +112,7 @@ function RegisterForm() {
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t.audit.errors.passwords_mismatch);
       return;
     }
 

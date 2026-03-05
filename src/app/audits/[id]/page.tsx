@@ -129,7 +129,7 @@ export default function AuditDetailPage() {
     } catch (err) {
       console.error(`Failed to download audit ${audit.id} PDF:`, err);
       setDownloadError(
-        err instanceof Error ? err.message : "Download failed"
+        err instanceof Error ? err.message : t.audit.errors.download_failed
       );
     } finally {
       setDownloading(false);
@@ -179,19 +179,19 @@ export default function AuditDetailPage() {
   // Determine which tabs are available
   const availableTabs: { value: string; label: string }[] = [];
   if (rec?.executive_summary || rec?.business_impact) {
-    availableTabs.push({ value: "overview", label: "Overview" });
+    availableTabs.push({ value: "overview", label: t.audit.tabs.overview });
   }
   if (rec?.quick_wins?.length || rec?.priority_recommendations?.length) {
-    availableTabs.push({ value: "recommendations", label: "Recommendations" });
+    availableTabs.push({ value: "recommendations", label: t.audit.tabs.recommendations });
   }
   if (rec?.keyword_opportunities?.length || rec?.content_recommendations?.length) {
-    availableTabs.push({ value: "content", label: "Content & Keywords" });
+    availableTabs.push({ value: "content", label: t.audit.tabs.content });
   }
   if (rec?.action_plan || rec?.long_term_strategy) {
-    availableTabs.push({ value: "strategy", label: "Strategy" });
+    availableTabs.push({ value: "strategy", label: t.audit.tabs.strategy });
   }
   if (rec?.competitive_context && rec.competitive_context.length > 10) {
-    availableTabs.push({ value: "competitive", label: "Competitive" });
+    availableTabs.push({ value: "competitive", label: t.audit.tabs.competitive });
   }
 
   return (

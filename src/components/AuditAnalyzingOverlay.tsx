@@ -1,47 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useI18n } from "@/hooks/useI18n";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 
-/* ─── Analysis steps shown to the user ──────────────────────────────────── */
-const ANALYSIS_STEPS = [
-    {
-        label: "Connecting to website",
-        detail: "Establishing secure connection…",
-        icon: "globe",
-    },
-    {
-        label: "Crawling pages & structure",
-        detail: "Scanning site architecture & internal links…",
-        icon: "spider",
-    },
-    {
-        label: "Analyzing on-page SEO",
-        detail: "Evaluating meta tags, headings & content…",
-        icon: "search",
-    },
-    {
-        label: "Checking technical health",
-        detail: "Inspecting robots.txt, sitemap & schema markup…",
-        icon: "wrench",
-    },
-    {
-        label: "Evaluating performance",
-        detail: "Measuring speed, Core Web Vitals & mobile UX…",
-        icon: "zap",
-    },
-    {
-        label: "Running AI analysis",
-        detail: "Claude AI is generating tailored recommendations…",
-        icon: "brain",
-    },
-    {
-        label: "Building your report",
-        detail: "Compiling results into a professional PDF…",
-        icon: "file",
-    },
-];
+/* ─── Analysis step icon keys (labels come from i18n) ───────────────────── */
+const STEP_ICONS = ["globe", "spider", "search", "wrench", "zap", "brain", "file"] as const;
+
+function useAnalysisSteps() {
+    const { t } = useI18n();
+    const s = t.audit.analyzing_steps;
+    return [
+        { label: s.connecting, detail: s.connecting_detail, icon: "globe" },
+        { label: s.crawling, detail: s.crawling_detail, icon: "spider" },
+        { label: s.on_page, detail: s.on_page_detail, icon: "search" },
+        { label: s.technical, detail: s.technical_detail, icon: "wrench" },
+        { label: s.performance, detail: s.performance_detail, icon: "zap" },
+        { label: s.ai_analysis, detail: s.ai_analysis_detail, icon: "brain" },
+        { label: s.building, detail: s.building_detail, icon: "file" },
+    ];
+}
 
 /* ─── Step interval timing (ms) ────────────────────────────────────────── */
 const STEP_INTERVAL = 4200;
@@ -132,6 +111,8 @@ interface AuditRunningProgressProps {
 }
 
 export function AuditRunningProgress({ url, statusLabel }: AuditRunningProgressProps) {
+    const { t } = useI18n();
+    const ANALYSIS_STEPS = useAnalysisSteps();
     const [currentStep, setCurrentStep] = useState(0);
     const [progress, setProgress] = useState(0);
 
@@ -145,13 +126,13 @@ export function AuditRunningProgress({ url, statusLabel }: AuditRunningProgressP
         }, STEP_INTERVAL);
 
         return () => clearInterval(timer);
-    }, []);
+    }, [ANALYSIS_STEPS.length]);
 
     /* Smooth progress bar that fills based on current step */
     useEffect(() => {
         const stepProgress = ((currentStep + 1) / ANALYSIS_STEPS.length) * 92;
         setProgress(Math.min(stepProgress, 92));
-    }, [currentStep]);
+    }, [currentStep, ANALYSIS_STEPS.length]);
 
     /* Format URL for display */
     const displayUrl = (() => {
@@ -218,7 +199,7 @@ export function AuditRunningProgress({ url, statusLabel }: AuditRunningProgressP
                 <div className="px-6 sm:px-8 pt-6 pb-2">
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            Progress
+                            {t.audit.analyzing_progress}
                         </span>
                         <span className="text-xs font-bold text-indigo-600">{Math.round(progress)}%</span>
                     </div>
@@ -267,10 +248,10 @@ export function AuditRunningProgress({ url, statusLabel }: AuditRunningProgressP
                                 <div className="min-w-0 flex-1">
                                     <p
                                         className={`text-sm font-medium leading-tight ${isActive
-                                                ? "text-indigo-700"
-                                                : isCompleted
-                                                    ? "text-gray-700"
-                                                    : "text-gray-400"
+                                            ? "text-indigo-700"
+                                            : isCompleted
+                                                ? "text-gray-700"
+                                                : "text-gray-400"
                                             }`}
                                     >
                                         {step.label}
@@ -294,7 +275,7 @@ export function AuditRunningProgress({ url, statusLabel }: AuditRunningProgressP
                             <polyline points="12 6 12 12 16 14" />
                         </svg>
                         <p className="text-xs font-medium text-amber-700">
-                            Please don&apos;t close this page — your audit is being generated
+                            {t.audit.analyzing_warning}
                         </p>
                     </div>
                 </div>
