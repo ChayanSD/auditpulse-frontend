@@ -5,7 +5,7 @@ import { useI18n } from "@/hooks/useI18n";
 import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Audit } from "@/lib/api";
-import { useAuditsList } from "@/hooks/queries/useAudits";
+import { useAuditsCount, useAuditsList } from "@/hooks/queries/useAudits";
 import { useSubscription } from "@/hooks/queries/useSubscriptions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -96,9 +96,10 @@ export default function DashboardPage() {
 
   // Fetch only the 5 most recent audits for dashboard overview
   const { data: recentAudits = [], isLoading: auditsLoading } = useAuditsList(0, 5, !authLoading);
+  const { data: auditsCount, isLoading: auditsCountLoading } = useAuditsCount(!authLoading);
   const { data: sub, isLoading: subLoading } = useSubscription(!authLoading);
 
-  const loading = authLoading || auditsLoading || subLoading;
+  const loading = authLoading || auditsLoading || auditsCountLoading || subLoading;
 
   const usagePercent = sub
     ? Math.min(100, (sub.audits_used_this_month / sub.audits_per_month) * 100)
@@ -139,7 +140,7 @@ export default function DashboardPage() {
                           {t.dashboard.stats.total_audits}
                         </p>
                         <p className="text-2xl font-bold text-gray-900 mt-1">
-                          {recentAudits.length}
+                          {auditsCount?.total ?? 0}
                         </p>
                       </div>
                       <div className="h-10 w-10 rounded-lg bg-indigo-50 flex items-center justify-center">

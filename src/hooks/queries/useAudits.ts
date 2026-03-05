@@ -31,3 +31,11 @@ export function useAuditDetail(id: string, enabled = true) {
         },
     });
 }
+
+export function useAuditsCount(enabled = true) {
+    return useQuery({
+        queryKey: queryKeys.audits.count(),
+        queryFn: () => audits.count(),
+        enabled,
+    });
+}
