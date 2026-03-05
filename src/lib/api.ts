@@ -12,6 +12,38 @@ function getAuthToken(): string | null {
   return typeof window !== "undefined" ? localStorage.getItem("ap_token") : null;
 }
 
+function buildReportFilenameFromUrl(siteUrl?: string): string {
+  if (!siteUrl) return "seo_audit_site.pdf";
+  try {
+    const normalized = /^https?:\/\//i.test(siteUrl) ? siteUrl : `https://${siteUrl}`;
+    const parsed = new URL(normalized);
+    let domain = parsed.hostname.toLowerCase();
+    if (domain.startsWith("www.")) domain = domain.slice(4);
+    domain = domain.replace(/[^a-z0-9.-]/g, "-").replace(/-+/g, "-").replace(/^[.-]+|[.-]+$/g, "");
+    if (!domain) domain = "site";
+    return `seo_audit_${domain}.pdf`;
+  } catch {
+    return "seo_audit_site.pdf";
+  }
+}
+
+function extractFilenameFromDisposition(disposition: string): string | null {
+  if (!disposition) return null;
+
+  // RFC 5987 format: filename*=UTF-8''seo_audit_example.com.pdf
+  const extended = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+  if (extended?.[1]) {
+    try {
+      return decodeURIComponent(extended[1]).replace(/["']/g, "");
+    } catch {
+      return extended[1].replace(/["']/g, "");
+    }
+  }
+
+  const basic = disposition.match(/filename=\"?([^\";]+)\"?/i);
+  return basic?.[1] || null;
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
@@ -165,7 +197,7 @@ export const audits = {
 
   downloadUrl: (id: string) => `${API_BASE}/audits/${id}/download`,
 
-  downloadPdf: async (id: string): Promise<{ blob: Blob; filename: string }> => {
+  downloadPdf: async (id: string, siteUrl?: string): Promise<{ blob: Blob; filename: string }> => {
     const token = getAuthToken();
     const res = await fetch(`${API_BASE}/audits/${id}/download`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -176,8 +208,7 @@ export const audits = {
     }
     const blob = await res.blob();
     const disposition = res.headers.get("content-disposition") || "";
-    const match = disposition.match(/filename="([^"]+)"/i);
-    const filename = match?.[1] || `seo_audit_${id}.pdf`;
+    const filename = extractFilenameFromDisposition(disposition) || buildReportFilenameFromUrl(siteUrl);
     return { blob, filename };
   },
 };

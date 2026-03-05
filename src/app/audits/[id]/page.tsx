@@ -109,7 +109,7 @@ export default function AuditDetailPage() {
     setDownloading(true);
     setDownloadError(null);
     try {
-      const { blob, filename } = await audits.downloadPdf(audit.id);
+      const { blob, filename } = await audits.downloadPdf(audit.id, audit.url);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
