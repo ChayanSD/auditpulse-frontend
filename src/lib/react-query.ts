@@ -20,6 +20,7 @@ export const queryKeys = {
     audits: {
         all: ["audits"] as const,
         list: (skip: number, limit: number) => [...queryKeys.audits.all, skip, limit] as const,
+        count: () => [...queryKeys.audits.all, "count"] as const,
         detail: (id: string) => [...queryKeys.audits.all, id] as const,
     },
     subscriptions: {

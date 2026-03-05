@@ -186,12 +186,18 @@ export interface AuditDetail extends Audit {
   };
 }
 
+export interface AuditCount {
+  total: number;
+}
+
 export const audits = {
   create: (data: CreateAuditData) =>
     request<Audit>("/audits/", { method: "POST", body: JSON.stringify(data) }),
 
   list: (skip = 0, limit = 20) =>
     request<Audit[]>(`/audits/?skip=${skip}&limit=${limit}`),
+
+  count: () => request<AuditCount>("/audits/count"),
 
   get: (id: string) => request<AuditDetail>(`/audits/${id}`),
 
