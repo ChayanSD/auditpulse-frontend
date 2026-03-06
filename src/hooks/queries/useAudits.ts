@@ -7,6 +7,7 @@ export function useAuditsList(skip = 0, limit = 20, enabled = true) {
         queryKey: queryKeys.audits.list(skip, limit),
         queryFn: () => audits.list(skip, limit),
         enabled,
+        placeholderData: (previousData) => previousData,
         // Automatically refetch every 4 seconds if any audit is pending/running
         refetchInterval: (query) => {
             const list = query.state.data;
