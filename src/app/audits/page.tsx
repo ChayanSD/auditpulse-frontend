@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/hooks/useI18n";
 import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Audit } from "@/lib/api";
-import { useAuditsList } from "@/hooks/queries/useAudits";
+import { useAuditsCount, useAuditsList } from "@/hooks/queries/useAudits";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -152,26 +152,26 @@ export default function AuditsPage() {
   const { t } = useI18n();
   const { loading: authLoading } = useAuth();
   const [currentPage, setCurrentPage] = useState(1);
+  const skip = (currentPage - 1) * PAGE_SIZE;
 
-  // Fetch all audits (large limit for client-side pagination)
+  // Fetch paginated audits from backend
   const {
-    data: allAudits = [],
+    data: paginatedAudits = [],
     isLoading: auditsLoading,
     isError,
-  } = useAuditsList(0, 200, !authLoading);
+  } = useAuditsList(skip, PAGE_SIZE, !authLoading);
+  const { data: auditsCount, isLoading: countLoading } = useAuditsCount(!authLoading);
+  const totalAudits = auditsCount?.total ?? 0;
 
-  const loading = authLoading || auditsLoading;
+  const loading = authLoading || auditsLoading || countLoading;
 
-  const totalPages = Math.ceil(allAudits.length / PAGE_SIZE);
-  const paginatedAudits = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return allAudits.slice(start, start + PAGE_SIZE);
-  }, [allAudits, currentPage]);
+  const totalPages = Math.max(1, Math.ceil(totalAudits / PAGE_SIZE));
 
-  // Reset to page 1 if current page exceeds total
-  if (currentPage > totalPages && totalPages > 0) {
-    setCurrentPage(1);
-  }
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -185,8 +185,8 @@ export default function AuditsPage() {
               {t.nav.audits}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {allAudits.length > 0
-                ? `${allAudits.length} audit${allAudits.length !== 1 ? "s" : ""} total`
+              {totalAudits > 0
+                ? `${totalAudits} audit${totalAudits !== 1 ? "s" : ""} total`
                 : "Manage and review all your SEO audits"}
             </p>
           </div>
@@ -204,7 +204,7 @@ export default function AuditsPage() {
 
         {loading ? (
           <AuditsSkeleton />
-        ) : allAudits.length === 0 ? (
+        ) : totalAudits === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">
               <div className="mx-auto h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
