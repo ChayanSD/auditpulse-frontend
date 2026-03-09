@@ -45,6 +45,63 @@ export default function SettingsPage() {
 
   const dataLoading = authLoading || userLoading || subLoading;
 
+  // Check for success/canceled query params from checkout
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "true") {
+      toast.success("Subscription updated successfully!");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+      // Refetch subscription data
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscriptions.details() });
+    } else if (params.get("canceled") === "true") {
+      toast.error("Checkout was canceled. You can try again anytime.");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+    }
+  }, [queryClient]);
+
+  // Check for success/canceled query params from checkout
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "true") {
+      toast.success("Subscription updated successfully!");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+      // Refetch subscription data
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscriptions.details() });
+    } else if (params.get("canceled") === "true") {
+      toast.error("Checkout was canceled. You can try again anytime.");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+    }
+  }, [queryClient]);
+
+  // Check for success/canceled query params from checkout
+  const [searchParams, setSearchParams] = useState(
+    typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams()
+  );
+
+  useEffect(() => {
+    if (searchParams.get("success") === "true") {
+      toast.success("Subscription updated successfully!");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+      // Refetch subscription data
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscriptions.details() });
+    } else if (searchParams.get("canceled") === "true") {
+      toast.error("Checkout was canceled. You can try again anytime.");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+    }
+  }, [searchParams, queryClient]);
+
   // Controlled fields — seeded from query data once available
   const [preferredLanguage, setPreferredLanguage] = useState("en");
   useEffect(() => {

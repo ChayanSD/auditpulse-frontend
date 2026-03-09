@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useI18n } from "@/hooks/useI18n";
 import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
@@ -93,6 +94,7 @@ function DashboardSkeleton() {
 export default function DashboardPage() {
   const { t } = useI18n();
   const { loading: authLoading } = useAuth();
+  const router = useRouter();
 
   // Fetch only the 5 most recent audits for dashboard overview
   const { data: recentAudits = [], isLoading: auditsLoading } = useAuditsList(0, 5, !authLoading);
@@ -104,6 +106,23 @@ export default function DashboardPage() {
   const usagePercent = sub
     ? Math.min(100, (sub.audits_used_this_month / sub.audits_per_month) * 100)
     : 0;
+
+  // Check if trial is active and close to expiring (within 3 days)
+  const isTrialExpiringSoon = sub?.status === "trialing" && sub?.trial_end &&
+    (new Date(sub.trial_end).getTime() - Date.now()) < 3 * 24 * 60 * 60 * 1000;
+
+  const trialDaysRemaining = sub?.status === "trialing" && sub?.trial_end
+    ? Math.max(0, Math.ceil((new Date(sub.trial_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : null;
+
+  const handleNewAudit = () => {
+    // Check if subscription is active
+    if (!sub || sub.status === "trialing" || sub.status === "unpaid" || sub.status === "canceled") {
+      router.push("/pricing");
+    } else {
+      router.push("/audits/new");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -121,7 +140,7 @@ export default function DashboardPage() {
             </p>
           </div>
           <Button asChild size="lg">
-            <Link href="/audits/new">+ {t.dashboard.new_audit}</Link>
+            <button onClick={handleNewAudit}>+ {t.dashboard.new_audit}</button>
           </Button>
         </div>
 
@@ -129,6 +148,21 @@ export default function DashboardPage() {
           <DashboardSkeleton />
         ) : (
           <>
+            {/* Trial Warning Banner */}
+            {isTrialExpiringSoon && trialDaysRemaining !== null && (
+              <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <svg className="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                  <p className="text-sm text-amber-800">
+                    Your trial ends in {trialDaysRemaining} day{trialDaysRemaining === 1 ? '' : 's'}. {' '}
+                    <Link href="/pricing" className="underline font-medium">Subscribe now</Link> to continue.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Stats Grid */}
             {sub && (
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

@@ -233,6 +233,12 @@ export interface Subscription {
   cancel_at_period_end: boolean;
 }
 
+export interface TrialStatus {
+  is_active: boolean;
+  days_remaining: number | null;
+  status: string | null;
+}
+
 export interface Referral {
   id: string;
   referral_code: string;
@@ -267,4 +273,6 @@ export const subscriptions = {
   listReferrals: () => request<Referral[]>("/subscriptions/referrals"),
 
   getLanguages: () => request<LanguageOption[]>("/subscriptions/languages"),
+
+  getTrialStatus: () => request<TrialStatus>("/subscriptions/trial-status"),
 };

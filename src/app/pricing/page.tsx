@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useI18n } from "@/hooks/useI18n";
 import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
@@ -12,6 +12,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { subscriptions } from "@/lib/api";
+import { toast } from "sonner";
 
 const PLAN_KEYS = ["starter", "professional", "agency"] as const;
 const POPULAR = "professional";
@@ -40,14 +42,17 @@ function PricingSkeleton() {
 export default function PricingPage() {
   const { t } = useI18n();
   const { loading: authLoading, user } = useAuth();
-  const { data: subData, isLoading: subLoading } = useSubscription(
-    !authLoading && !!user
-  );
 
-  const subscription =
-    subData && PLAN_KEYS.includes(subData.plan as PlanKey) ? subData : null;
+  // Only fetch subscription if user is logged in
+  const { data: subData, isLoading: subLoading } = useSubscription(!!user);
+
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+
+  // For non-logged in users, show all plans without highlighting any
+  const subscription = user && subData && PLAN_KEYS.includes(subData.plan as PlanKey) ? subData : null;
   const currentPlan = (subscription?.plan as PlanKey) || null;
   const isTrialing = subscription?.status === "trialing";
+  const isActive = subscription?.status === "active";
 
   const orderedPlans = useMemo(() => {
     if (!currentPlan) return PLAN_KEYS;
@@ -62,6 +67,30 @@ export default function PricingPage() {
     const date = new Date(subscription.trial_end).toLocaleDateString();
     return fmt(t.pricing.trial_until, { date });
   }, [isTrialing, subscription?.trial_end, t.pricing.trial_until]);
+
+  const handleCheckout = async (planKey: PlanKey) => {
+    if (!user) {
+      // Redirect to register if not logged in
+      window.location.href = "/register";
+      return;
+    }
+
+    setCheckoutLoading(planKey);
+    try {
+      const baseUrl = window.location.origin;
+      const { checkout_url } = await subscriptions.createCheckout(
+        planKey,
+        `${baseUrl}/settings?success=true`,
+        `${baseUrl}/pricing?canceled=true`
+      );
+
+      // Redirect to Stripe Checkout
+      window.location.href = checkout_url;
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to start checkout");
+      setCheckoutLoading(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -85,7 +114,7 @@ export default function PricingPage() {
         </div>
 
         {/* Plans */}
-        {authLoading || subLoading ? (
+        {authLoading ? (
           <PricingSkeleton />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -93,19 +122,20 @@ export default function PricingPage() {
               const plan = t.pricing.plans[planKey];
               const isPopular = planKey === POPULAR;
               const isCurrentPlan = currentPlan === planKey;
-              const actionHref = user ? "/settings" : "/register";
-              const actionLabel = user
-                ? t.pricing.manage_plan
-                : t.pricing.choose_plan;
+
+              // Show upgrade button if user has a different plan, 
+              // show "current" if on this plan
+              const isUpgrade = currentPlan && currentPlan !== planKey;
+              const isDowngrade = currentPlan && PLAN_KEYS.indexOf(currentPlan) > PLAN_KEYS.indexOf(planKey);
 
               return (
                 <Card
                   key={planKey}
                   className={`flex flex-col transition-shadow ${isCurrentPlan
-                      ? "border-2 border-emerald-500 shadow-lg"
-                      : isPopular
-                        ? "border-2 border-indigo-600 shadow-xl"
-                        : "hover:shadow-md"
+                    ? "border-2 border-emerald-500 shadow-lg"
+                    : isPopular
+                      ? "border-2 border-indigo-600 shadow-xl"
+                      : "hover:shadow-md"
                     }`}
                 >
                   <CardContent className="p-6 sm:p-8 flex flex-col flex-1">
@@ -198,12 +228,29 @@ export default function PricingPage() {
                       </Button>
                     ) : (
                       <Button
-                        asChild
                         variant={isPopular ? "default" : "outline"}
                         className="w-full"
                         size="lg"
+                        onClick={() => handleCheckout(planKey)}
+                        disabled={!!checkoutLoading}
                       >
-                        <Link href={actionHref}>{actionLabel}</Link>
+                        {checkoutLoading === planKey ? (
+                          <span className="flex items-center gap-2">
+                            <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                            Processing...
+                          </span>
+                        ) : !user ? (
+                          t.pricing.choose_plan
+                        ) : isUpgrade ? (
+                          "Upgrade"
+                        ) : isDowngrade ? (
+                          "Downgrade"
+                        ) : (
+                          t.pricing.choose_plan
+                        )}
                       </Button>
                     )}
                   </CardContent>

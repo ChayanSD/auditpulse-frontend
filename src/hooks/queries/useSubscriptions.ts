@@ -7,6 +7,17 @@ export function useSubscription(enabled = true) {
         queryKey: queryKeys.subscriptions.details(),
         queryFn: () => subscriptions.get(),
         enabled,
+        // Don't show loading state when disabled - immediately return cached/default
+        placeholderData: (previousData) => previousData,
+    });
+}
+
+export function useTrialStatus(enabled = true) {
+    return useQuery({
+        queryKey: queryKeys.subscriptions.trialStatus(),
+        queryFn: () => subscriptions.getTrialStatus(),
+        enabled,
+        staleTime: 1000 * 60, // Check trial status every minute
     });
 }
 

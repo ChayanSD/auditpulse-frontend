@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (loading) return;
 
-        const publicPaths = ["/", "/login", "/register"];
+        const publicPaths = ["/", "/login", "/register", "/pricing"];
         const isPublicPath = publicPaths.includes(pathname);
         const token = typeof window !== "undefined" ? localStorage.getItem("ap_token") : null;
 
