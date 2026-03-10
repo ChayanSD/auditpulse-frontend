@@ -28,5 +28,6 @@ export const queryKeys = {
         details: () => [...queryKeys.subscriptions.all, "details"] as const,
         languages: () => [...queryKeys.subscriptions.all, "languages"] as const,
         referrals: () => [...queryKeys.subscriptions.all, "referrals"] as const,
+        trialStatus: () => [...queryKeys.subscriptions.all, "trialStatus"] as const,
     },
 };

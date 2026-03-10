@@ -6,7 +6,8 @@
     "settings": "Settings",
     "logout": "Logout",
     "login": "Login",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+    "demo": "Demo"
   },
   "landing": {
     "hero_title": "AI-Powered SEO Audits",
@@ -129,6 +130,7 @@
     "trial_note": "You are currently not charged. Billing starts after trial.",
     "choose_plan": "Choose Plan",
     "manage_plan": "Manage Plan",
+    "upgrade_success": "Successfully upgraded to {plan} plan!",
     "beta_offer": "🎉 Beta Tester Offer: Get your first month free at launch!",
     "plans": {
       "starter": {
@@ -219,5 +221,43 @@
     "close": "Close",
     "yes": "Yes",
     "no": "No"
+  },
+  "demo": {
+    "title": "Interactive Demo",
+    "subtitle": "Discover the AuditPulse workflow in 3 easy steps.",
+    "step_of": "Step {current} of {total}",
+    "back": "Back",
+    "next": "Next Step",
+    "finish": "Try it now",
+    "steps": [
+      {
+        "title": "Start a New Audit",
+        "description": "Enter your client's details and website URL. AuditPulse supports multiple languages and automated delivery for a seamless agency experience.",
+        "features": [
+          "White-label support",
+          "Multi-language PDF",
+          "Automated delivery"
+        ]
+      },
+      {
+        "title": "AI Analyzing in Real-time",
+        "description": "Watch as our AI engine crawls pages, analyzes on-page SEO, checks technical health, and evaluates performance in seconds.",
+        "features": [
+          "Deep crawl analysis",
+          "Technical health check",
+          "Performance metrics"
+        ]
+      },
+      {
+        "title": "Comprehensive SEO Summary",
+        "description": "Get a high-level executive summary and business impact analysis. Ready to share with your clients to prove value and close deals.",
+        "features": [
+          "Executive Summary",
+          "Business Impact Analysis",
+          "Actionable recommendations"
+        ]
+      }
+    ],
+    "footer": "Trusted by 500+ SEO agencies worldwide. Join the audit revolution."
   }
 }

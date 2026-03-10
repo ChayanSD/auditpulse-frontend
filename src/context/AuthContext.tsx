@@ -42,14 +42,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (loading) return;
 
-        const publicPaths = ["/", "/login", "/register"];
+        const publicPaths = ["/", "/login", "/register", "/pricing", "/demo"];
         const isPublicPath = publicPaths.includes(pathname);
         const token = typeof window !== "undefined" ? localStorage.getItem("ap_token") : null;
 
         if (!token && !isPublicPath) {
             // Not logged in and trying to access a protected page
             router.replace("/login");
-        } else if (token && isPublicPath && pathname !== "/") {
+        } else if (token && ["/login", "/register"].includes(pathname)) {
             // Logged in and trying to access login/register
             router.replace("/dashboard");
         }

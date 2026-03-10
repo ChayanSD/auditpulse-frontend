@@ -50,7 +50,7 @@ export default function HomePage() {
               size="lg"
               className="text-base px-8 h-12 bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white"
             >
-              <a href="#live-demo">{t.landing.cta_demo}</a>
+              <Link href="/demo">{t.landing.cta_demo}</Link>
             </Button>
           </div>
         </div>

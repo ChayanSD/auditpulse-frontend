@@ -85,7 +85,23 @@ export default function NewAuditPage() {
       router.push(`/audits/${audit.id}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : t.common.error;
-      setError(msg);
+
+      // Check for specific error messages that indicate subscription issues
+      if (msg.includes("trial has expired") || msg.includes("subscription is not active")) {
+        setError(msg + " Please subscribe to continue.");
+        // Redirect to pricing after a short delay
+        setTimeout(() => {
+          router.push("/pricing");
+        }, 3000);
+      } else if (msg.includes("limit reached")) {
+        setError(msg + " Please upgrade your plan.");
+        // Redirect to pricing after a short delay
+        setTimeout(() => {
+          router.push("/pricing");
+        }, 3000);
+      } else {
+        setError(msg);
+      }
       toast.error(msg);
       setSubmitting(false);
     }

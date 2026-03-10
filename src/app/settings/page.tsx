@@ -26,6 +26,14 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function SettingsPage() {
   const { t, setLocale } = useI18n();
@@ -45,6 +53,63 @@ export default function SettingsPage() {
 
   const dataLoading = authLoading || userLoading || subLoading;
 
+  // Check for success/canceled query params from checkout
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "true") {
+      toast.success("Subscription updated successfully!");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+      // Refetch subscription data
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscriptions.details() });
+    } else if (params.get("canceled") === "true") {
+      toast.error("Checkout was canceled. You can try again anytime.");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+    }
+  }, [queryClient]);
+
+  // Check for success/canceled query params from checkout
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "true") {
+      toast.success("Subscription updated successfully!");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+      // Refetch subscription data
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscriptions.details() });
+    } else if (params.get("canceled") === "true") {
+      toast.error("Checkout was canceled. You can try again anytime.");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+    }
+  }, [queryClient]);
+
+  // Check for success/canceled query params from checkout
+  const [searchParams, setSearchParams] = useState(
+    typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams()
+  );
+
+  useEffect(() => {
+    if (searchParams.get("success") === "true") {
+      toast.success("Subscription updated successfully!");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+      // Refetch subscription data
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscriptions.details() });
+    } else if (searchParams.get("canceled") === "true") {
+      toast.error("Checkout was canceled. You can try again anytime.");
+      // Clear the query param
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+    }
+  }, [searchParams, queryClient]);
+
   // Controlled fields — seeded from query data once available
   const [preferredLanguage, setPreferredLanguage] = useState("en");
   useEffect(() => {
@@ -59,6 +124,8 @@ export default function SettingsPage() {
   const [copied, setCopied] = useState(false);
   const [referLoading, setReferLoading] = useState(false);
   const [referError, setReferError] = useState("");
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
 
   const handleSaveLanguage = async () => {
     setSaving(true);
@@ -104,6 +171,36 @@ export default function SettingsPage() {
     setCopied(true);
     toast.success("Referral link copied to clipboard");
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCancelSubscription = async () => {
+    setCancelling(true);
+    try {
+      await subscriptions.cancel();
+      await queryClient.invalidateQueries({ queryKey: queryKeys.subscriptions.details() });
+      toast.success("Subscription canceled successfully. Your access will continue until the end of your billing period.");
+      setCancelDialogOpen(false);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : t.common.error;
+      toast.error(msg);
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  const [reactivating, setReactivating] = useState(false);
+  const handleReactivateSubscription = async () => {
+    setReactivating(true);
+    try {
+      await subscriptions.reactivate();
+      await queryClient.invalidateQueries({ queryKey: queryKeys.subscriptions.details() });
+      toast.success("Subscription reactivated! Your plan will continue normally.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : t.common.error;
+      toast.error(msg);
+    } finally {
+      setReactivating(false);
+    }
   };
 
   const usagePercent = sub
@@ -226,12 +323,19 @@ export default function SettingsPage() {
                           <p className="font-semibold text-gray-900 capitalize">
                             {sub.plan} Plan
                           </p>
-                          <Badge
-                            variant="outline"
-                            className="bg-emerald-50 text-emerald-700 border-emerald-200 capitalize mt-1"
-                          >
-                            {sub.status}
-                          </Badge>
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <Badge
+                              variant="outline"
+                              className={`capitalize ${sub.cancel_at_period_end
+                                ? "bg-amber-50 text-amber-700 border-amber-200"
+                                : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                }`}
+                            >
+                              {sub.cancel_at_period_end
+                                ? "Active (Cancels at period end)"
+                                : sub.status}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
                       {sub.free_months_remaining > 0 && (
@@ -259,6 +363,55 @@ export default function SettingsPage() {
                         {Math.round(usagePercent)}% of your monthly quota used
                       </p>
                     </div>
+
+                    <Separator />
+
+                    {/* Cancel Subscription */}
+                    {sub.status === "active" && !sub.cancel_at_period_end && (
+                      <div className="pt-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-red-50 border border-red-100">
+                          <div>
+                            <p className="text-sm font-medium text-red-900">
+                              Cancel Subscription
+                            </p>
+                            <p className="text-xs text-red-700 mt-1">
+                              You will lose access at the end of your billing period.
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            className="text-sm font-semibold text-red-600 hover:text-red-700 bg-white border border-red-200 rounded-md px-3 py-1.5 shadow-sm transition-colors"
+                            onClick={() => setCancelDialogOpen(true)}
+                          >
+                            Cancel Plan
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Reactivate Subscription */}
+                    {sub.cancel_at_period_end && (
+                      <div className="pt-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-emerald-50 border border-emerald-100">
+                          <div>
+                            <p className="text-sm font-medium text-emerald-900">
+                              Reactivate Subscription
+                            </p>
+                            <p className="text-xs text-emerald-700 mt-1">
+                              Keep your current plan and prevent it from canceling.
+                            </p>
+                          </div>
+                          <Button
+                            size="sm"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white border-0 shadow-sm shrink-0"
+                            onClick={handleReactivateSubscription}
+                            disabled={reactivating}
+                          >
+                            {reactivating ? "Reactivating..." : "Reactivate Plan"}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center py-8">
@@ -383,6 +536,44 @@ export default function SettingsPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Cancel Subscription Confirmation Dialog */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Subscription</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel your subscription? You will continue to have access until the end of your current billing period.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setCancelDialogOpen(false)}
+              disabled={cancelling}
+            >
+              Keep Subscription
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleCancelSubscription}
+              disabled={cancelling}
+            >
+              {cancelling ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Canceling...
+                </span>
+              ) : (
+                "Confirm Cancellation"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -233,6 +233,12 @@ export interface Subscription {
   cancel_at_period_end: boolean;
 }
 
+export interface TrialStatus {
+  is_active: boolean;
+  days_remaining: number | null;
+  status: string | null;
+}
+
 export interface Referral {
   id: string;
   referral_code: string;
@@ -250,13 +256,14 @@ export interface LanguageOption {
 export const subscriptions = {
   get: () => request<Subscription>("/subscriptions/me"),
 
-  createCheckout: (plan: string, successUrl: string, cancelUrl: string) =>
+  createCheckout: (plan: string, successUrl: string, cancelUrl: string, locale?: string) =>
     request<{ checkout_url: string }>("/subscriptions/checkout", {
       method: "POST",
-      body: JSON.stringify({ plan, success_url: successUrl, cancel_url: cancelUrl }),
+      body: JSON.stringify({ plan, success_url: successUrl, cancel_url: cancelUrl, locale }),
     }),
 
   cancel: () => request("/subscriptions/cancel", { method: "POST" }),
+  reactivate: () => request("/subscriptions/reactivate", { method: "POST" }),
 
   createReferral: (email: string) =>
     request<Referral>("/subscriptions/referrals", {
@@ -267,4 +274,6 @@ export const subscriptions = {
   listReferrals: () => request<Referral[]>("/subscriptions/referrals"),
 
   getLanguages: () => request<LanguageOption[]>("/subscriptions/languages"),
+
+  getTrialStatus: () => request<TrialStatus>("/subscriptions/trial-status"),
 };
