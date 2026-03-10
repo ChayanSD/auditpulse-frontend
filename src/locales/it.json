@@ -6,7 +6,8 @@
     "settings": "Impostazioni",
     "logout": "Esci",
     "login": "Accedi",
-    "signup": "Registrati"
+    "signup": "Registrati",
+    "demo": "Demo"
   },
   "landing": {
     "hero_title": "Audit SEO Potenziati dall'AI",
@@ -129,6 +130,7 @@
     "trial_note": "Al momento non ti viene addebitato nulla. La fatturazione inizia dopo la prova.",
     "choose_plan": "Scegli Piano",
     "manage_plan": "Gestisci Piano",
+    "upgrade_success": "Aggiornato con successo al piano {plan}!",
     "beta_offer": "🎉 Offerta Beta Tester: ricevi il tuo primo mese gratuito al lancio!",
     "plans": {
       "starter": {
@@ -219,5 +221,43 @@
     "close": "Chiudi",
     "yes": "Sì",
     "no": "No"
+  },
+  "demo": {
+    "title": "Demo Interattiva",
+    "subtitle": "Scopri il flusso di lavoro di AuditPulse in 3 semplici passaggi.",
+    "step_of": "Passaggio {current} di {total}",
+    "back": "Indietro",
+    "next": "Passaggio Successivo",
+    "finish": "Provalo ora",
+    "steps": [
+      {
+        "title": "Inizia un Nuovo Audit",
+        "description": "Inserisci i dettagli del tuo cliente e l'URL del sito web. AuditPulse supporta diverse lingue e la consegna automatizzata per un'esperienza d'agenzia senza interruzioni.",
+        "features": [
+          "Supporto white-label",
+          "PDF multilingua",
+          "Consegna automatizzata"
+        ]
+      },
+      {
+        "title": "Analisi AI in Tempo Reale",
+        "description": "Osserva il nostro motore AI eseguire la scansione delle pagine, analizzare la SEO on-page, verificare lo stato tecnico e valutare le prestazioni in pochi secondi.",
+        "features": [
+          "Analisi approfondita del crawling",
+          "Controllo stato tecnico",
+          "Metriche di prestazione"
+        ]
+      },
+      {
+        "title": "Riepilogo SEO Completo",
+        "description": "Ottieni un executive summary di alto livello e un'analisi dell'impatto aziendale. Pronto da condividere con i tuoi clienti per dimostrare il valore e concludere affari.",
+        "features": [
+          "Executive Summary",
+          "Analisi dell'impatto aziendale",
+          "Raccomandazioni attuabili"
+        ]
+      }
+    ],
+    "footer": "Scelto da oltre 500 agenzie SEO in tutto il mondo. Unisciti alla rivoluzione dell'audit."
   }
 }

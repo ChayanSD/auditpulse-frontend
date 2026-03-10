@@ -188,6 +188,21 @@ export default function SettingsPage() {
     }
   };
 
+  const [reactivating, setReactivating] = useState(false);
+  const handleReactivateSubscription = async () => {
+    setReactivating(true);
+    try {
+      await subscriptions.reactivate();
+      await queryClient.invalidateQueries({ queryKey: queryKeys.subscriptions.details() });
+      toast.success("Subscription reactivated! Your plan will continue normally.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : t.common.error;
+      toast.error(msg);
+    } finally {
+      setReactivating(false);
+    }
+  };
+
   const usagePercent = sub
     ? Math.min(100, (sub.audits_used_this_month / sub.audits_per_month) * 100)
     : 0;
@@ -363,13 +378,36 @@ export default function SettingsPage() {
                               You will lose access at the end of your billing period.
                             </p>
                           </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-red-600 border-red-200 hover:bg-red-100 hover:text-red-700 shrink-0"
+                          <button
+                            type="button"
+                            className="text-sm font-semibold text-red-600 hover:text-red-700 bg-white border border-red-200 rounded-md px-3 py-1.5 shadow-sm transition-colors"
                             onClick={() => setCancelDialogOpen(true)}
                           >
                             Cancel Plan
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Reactivate Subscription */}
+                    {sub.cancel_at_period_end && (
+                      <div className="pt-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-emerald-50 border border-emerald-100">
+                          <div>
+                            <p className="text-sm font-medium text-emerald-900">
+                              Reactivate Subscription
+                            </p>
+                            <p className="text-xs text-emerald-700 mt-1">
+                              Keep your current plan and prevent it from canceling.
+                            </p>
+                          </div>
+                          <Button
+                            size="sm"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white border-0 shadow-sm shrink-0"
+                            onClick={handleReactivateSubscription}
+                            disabled={reactivating}
+                          >
+                            {reactivating ? "Reactivating..." : "Reactivate Plan"}
                           </Button>
                         </div>
                       </div>

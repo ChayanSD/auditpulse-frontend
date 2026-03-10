@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subscriptions } from "@/lib/api";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { CheckCircle2, Loader2, Zap } from "lucide-react";
 
 const PLAN_KEYS = ["starter", "professional", "agency"] as const;
 const POPULAR = "professional";
@@ -40,7 +42,7 @@ function PricingSkeleton() {
 }
 
 export default function PricingPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { loading: authLoading, user } = useAuth();
 
   // Only fetch subscription if user is logged in
@@ -81,11 +83,20 @@ export default function PricingPage() {
       const { checkout_url } = await subscriptions.createCheckout(
         planKey,
         `${baseUrl}/settings?success=true`,
-        `${baseUrl}/pricing?canceled=true`
+        `${baseUrl}/pricing?canceled=true`,
+        locale // Pass current application locale
       );
 
-      // Redirect to Stripe Checkout
-      window.location.href = checkout_url;
+      // Check if it's a direct upgrade (no Stripe checkout needed)
+      if (checkout_url.includes("upgraded=true")) {
+        // For upgrades, we updated locally - just show success
+        toast.success(fmt(t.pricing.upgrade_success, { plan: planKey }));
+        // Redirect to settings
+        window.location.href = checkout_url.replace("?upgraded=true", "");
+      } else {
+        // Redirect to Stripe Checkout
+        window.location.href = checkout_url;
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to start checkout");
       setCheckoutLoading(null);
@@ -123,137 +134,141 @@ export default function PricingPage() {
               const isPopular = planKey === POPULAR;
               const isCurrentPlan = currentPlan === planKey;
 
-              // Show upgrade button if user has a different plan, 
-              // show "current" if on this plan
               const isUpgrade = currentPlan && currentPlan !== planKey;
               const isDowngrade = currentPlan && PLAN_KEYS.indexOf(currentPlan) > PLAN_KEYS.indexOf(planKey);
 
               return (
                 <Card
                   key={planKey}
-                  className={`flex flex-col transition-shadow ${isCurrentPlan
-                    ? "border-2 border-emerald-500 shadow-lg"
-                    : isPopular
-                      ? "border-2 border-indigo-600 shadow-xl"
-                      : "hover:shadow-md"
-                    }`}
+                  className={cn(
+                    "flex flex-col transition-all duration-500 group relative",
+                    "lg:hover:scale-[1.02] lg:hover:shadow-2xl lg:hover:shadow-indigo-500/10",
+                    isCurrentPlan
+                      ? "border-2 border-emerald-500 shadow-lg ring-4 ring-emerald-500/10"
+                      : isPopular
+                        ? "border-2 border-indigo-600 shadow-xl bg-gradient-to-b from-indigo-50/20 to-white"
+                        : "border border-gray-100 lg:hover:border-indigo-200"
+                  )}
                 >
-                  <CardContent className="p-6 sm:p-8 flex flex-col flex-1">
-                    {/* Plan badge - inline, not absolute */}
-                    <div className="mb-4 min-h-[28px]">
+                  <CardContent className="p-6 sm:p-8 flex flex-col flex-1 relative z-10">
+                    {/* Plan badge */}
+                    <div className="mb-6 min-h-[32px]">
                       {isCurrentPlan ? (
-                        <Badge className="bg-emerald-600 text-white border-0 shadow-sm">
+                        <Badge className="bg-emerald-600 text-white border-0 shadow-sm px-3 py-1">
                           {isTrialing
                             ? t.pricing.trialing_plan
                             : t.pricing.current_plan}
                         </Badge>
                       ) : isPopular ? (
-                        <Badge className="bg-indigo-600 text-white border-0 shadow-sm">
+                        <Badge className="bg-indigo-600 text-white border-0 shadow-sm px-4 py-1 animate-pulse">
                           POPULAR
                         </Badge>
                       ) : (
-                        <div className="h-[22px]" />
+                        <div className="h-[28px]" />
                       )}
                     </div>
 
-                    <h3 className="text-xl font-bold text-gray-900">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
                       {plan.name}
                     </h3>
 
                     <div className="flex items-baseline gap-1 my-4">
-                      <span className="text-4xl font-bold text-gray-900">
+                      <span className="text-5xl font-extrabold text-gray-900 tracking-tight">
                         €{plan.price}
                       </span>
-                      <span className="text-muted-foreground">
+                      <span className="text-gray-500 font-medium">
                         {t.pricing.per_month}
                       </span>
                     </div>
 
-                    <Badge
-                      variant="outline"
-                      className="w-fit bg-indigo-50 text-indigo-700 border-indigo-200 mb-6"
-                    >
-                      {plan.audits}
-                    </Badge>
+                    <div className="mb-8">
+                      <Badge
+                        variant="secondary"
+                        className="bg-indigo-50 text-indigo-700 border-indigo-100 px-3 py-1 text-xs font-semibold"
+                      >
+                        {plan.audits}
+                      </Badge>
+                    </div>
 
                     {/* Trial info */}
                     {isCurrentPlan && isTrialing && trialEndLabel && (
-                      <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2">
-                        <p className="text-xs font-semibold text-emerald-800">
-                          {trialEndLabel}
+                      <div className="mb-6 rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 backdrop-blur-sm">
+                        <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1">
+                          Trial Active
                         </p>
-                        <p className="mt-1 text-xs text-emerald-700">
-                          {t.pricing.trial_note}
+                        <p className="text-sm text-emerald-700 leading-relaxed font-medium">
+                          {trialEndLabel}. {t.pricing.trial_note}
                         </p>
                       </div>
                     )}
 
-                    <Separator className="mb-6" />
+                    <Separator className="mb-8 opacity-50" />
 
                     {/* Features */}
-                    <ul className="space-y-3 mb-8 flex-1">
+                    <ul className="space-y-4 mb-10 flex-1">
                       {plan.features.map((feature, i) => (
                         <li
                           key={i}
-                          className="flex items-start gap-2.5 text-sm text-gray-600"
+                          className="flex items-start gap-3 text-sm text-gray-600 leading-snug"
                         >
-                          <svg
-                            className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="m4.5 12.75 6 6 9-13.5"
-                            />
-                          </svg>
-                          {feature}
+                          <div className="mt-0.5 rounded-full bg-emerald-100 p-0.5">
+                            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                          </div>
+                          <span className="font-medium">{feature}</span>
                         </li>
                       ))}
                     </ul>
 
                     {/* Action button */}
-                    {isCurrentPlan ? (
-                      <Button
-                        variant="outline"
-                        className="w-full cursor-default bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-50"
-                        disabled
-                      >
-                        {isTrialing
-                          ? t.pricing.trialing_plan
-                          : t.pricing.current_plan}
-                      </Button>
-                    ) : (
-                      <Button
-                        variant={isPopular ? "default" : "outline"}
-                        className="w-full"
-                        size="lg"
-                        onClick={() => handleCheckout(planKey)}
-                        disabled={!!checkoutLoading}
-                      >
-                        {checkoutLoading === planKey ? (
-                          <span className="flex items-center gap-2">
-                            <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                            </svg>
-                            Processing...
-                          </span>
-                        ) : !user ? (
-                          t.pricing.choose_plan
-                        ) : isUpgrade ? (
-                          "Upgrade"
-                        ) : isDowngrade ? (
-                          "Downgrade"
-                        ) : (
-                          t.pricing.choose_plan
-                        )}
-                      </Button>
-                    )}
+                    <div className="mt-auto pt-4">
+                      {isCurrentPlan ? (
+                        <Button
+                          variant="ghost"
+                          className="w-full cursor-default bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50 font-bold h-12"
+                          disabled
+                        >
+                          {isTrialing
+                            ? t.pricing.trialing_plan
+                            : t.pricing.current_plan}
+                        </Button>
+                      ) : (
+                        <Button
+                          variant={isPopular ? "default" : "outline"}
+                          className={cn(
+                            "w-full h-12 font-bold transition-all duration-300",
+                            isPopular
+                              ? "bg-indigo-600 lg:hover:bg-indigo-700 shadow-lg shadow-indigo-200 scale-100 lg:hover:scale-[1.05]"
+                              : "border-gray-200 lg:hover:border-indigo-600 lg:hover:text-white lg:group-hover:bg-indigo-600 lg:group-hover:text-white lg:group-hover:border-indigo-600 lg:group-hover:shadow-lg lg:group-hover:shadow-indigo-200"
+                          )}
+                          size="lg"
+                          onClick={() => handleCheckout(planKey)}
+                          disabled={!!checkoutLoading}
+                        >
+                          {checkoutLoading === planKey ? (
+                            <span className="flex items-center gap-2">
+                              <Loader2 className="animate-spin h-4 w-4" />
+                              Processing...
+                            </span>
+                          ) : !user ? (
+                            t.pricing.choose_plan
+                          ) : isUpgrade ? (
+                            "Upgrade"
+                          ) : isDowngrade ? (
+                            "Downgrade"
+                          ) : (
+                            t.pricing.choose_plan
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
+
+                  {/* Aesthetic Background Accents for Popular Plan */}
+                  {isPopular && (
+                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none overflow-hidden h-full w-full">
+                      <Zap className="h-full w-full text-indigo-600 transform translate-x-1/2 -translate-y-1/2 scale-150" />
+                    </div>
+                  )}
                 </Card>
               );
             })}

@@ -256,13 +256,14 @@ export interface LanguageOption {
 export const subscriptions = {
   get: () => request<Subscription>("/subscriptions/me"),
 
-  createCheckout: (plan: string, successUrl: string, cancelUrl: string) =>
+  createCheckout: (plan: string, successUrl: string, cancelUrl: string, locale?: string) =>
     request<{ checkout_url: string }>("/subscriptions/checkout", {
       method: "POST",
-      body: JSON.stringify({ plan, success_url: successUrl, cancel_url: cancelUrl }),
+      body: JSON.stringify({ plan, success_url: successUrl, cancel_url: cancelUrl, locale }),
     }),
 
   cancel: () => request("/subscriptions/cancel", { method: "POST" }),
+  reactivate: () => request("/subscriptions/reactivate", { method: "POST" }),
 
   createReferral: (email: string) =>
     request<Referral>("/subscriptions/referrals", {

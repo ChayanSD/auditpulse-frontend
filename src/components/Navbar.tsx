@@ -47,10 +47,13 @@ export function Navbar() {
       { href: "/pricing", label: t.nav.pricing },
       { href: "/settings", label: t.nav.settings },
     ]
-    : [{ href: "/pricing", label: t.nav.pricing }];
+    : [
+      { href: "/pricing", label: t.nav.pricing },
+      { href: "/demo", label: t.nav.demo },
+    ];
 
   useEffect(() => {
-    const targets = ["/dashboard", "/audits", "/audits/new", "/settings", "/pricing"];
+    const targets = ["/dashboard", "/audits", "/audits/new", "/settings", "/pricing", "/demo"];
     targets.forEach((href) => router.prefetch(href));
   }, [router]);
 
