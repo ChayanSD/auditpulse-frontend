@@ -7,7 +7,8 @@
     "logout": "Logout",
     "login": "Login",
     "signup": "Sign Up",
-    "demo": "Demo"
+    "demo": "Demo",
+    "live_demo": "Live Demo"
   },
   "landing": {
     "hero_title": "AI-Powered SEO Audits",

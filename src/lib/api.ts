@@ -194,6 +194,9 @@ export const audits = {
   create: (data: CreateAuditData) =>
     request<Audit>("/audits/", { method: "POST", body: JSON.stringify(data) }),
 
+  createDemo: (data: CreateAuditData) =>
+    request<Audit>("/audits/demo", { method: "POST", body: JSON.stringify(data) }),
+
   list: (skip = 0, limit = 20) =>
     request<Audit[]>(`/audits/?skip=${skip}&limit=${limit}`),
 

@@ -48,8 +48,8 @@ export function Navbar() {
       { href: "/settings", label: t.nav.settings },
     ]
     : [
+      { href: "/audits/new?mode=demo", label: t.nav.live_demo, isHighlight: true },
       { href: "/pricing", label: t.nav.pricing },
-      { href: "/demo", label: t.nav.demo },
     ];
 
   useEffect(() => {
@@ -93,10 +93,13 @@ export function Navbar() {
                   href={link.href}
                   prefetch
                   onMouseEnter={() => router.prefetch(link.href)}
-                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${pathname === link.href
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                    }`}
+                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                    pathname === link.href
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : link.isHighlight 
+                        ? "text-indigo-600 hover:text-indigo-700 bg-indigo-50/50 hover:bg-indigo-50"
+                        : "text-gray-600 hover:text-gray-900"
+                  }`}
                 >
                   {link.label}
                 </Link>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useI18n } from "@/hooks/useI18n";
 import { useAuth } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
@@ -43,8 +43,10 @@ function isValidAuditUrl(value: string): boolean {
 
 export default function NewAuditPage() {
   const { t } = useI18n();
-  const { loading: authLoading } = useAuth();
+  const { loading: authLoading, user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isDemoMode = searchParams.get("mode") === "demo" || (!user && !authLoading);
 
   const [url, setUrl] = useState("");
   const [clientName, setClientName] = useState("");
@@ -73,7 +75,8 @@ export default function NewAuditPage() {
     }
     setSubmitting(true);
     try {
-      const audit = await audits.create({
+      const submitFn = isDemoMode ? audits.createDemo : audits.create;
+      const audit = await submitFn({
         url: url.trim(),
         client_name: clientName || undefined,
         client_email: clientEmail || undefined,
@@ -109,7 +112,7 @@ export default function NewAuditPage() {
 
   /* ─── Loading skeleton ─────────────────────────────────────────────── */
 
-  if (authLoading) {
+  if (authLoading && !isDemoMode) {
     return (
       <div className="min-h-screen bg-gray-50/50">
         <Navbar />

@@ -7,7 +7,8 @@
     "logout": "Esci",
     "login": "Accedi",
     "signup": "Registrati",
-    "demo": "Demo"
+    "demo": "Demo",
+    "live_demo": "Demo dal vivo"
   },
   "landing": {
     "hero_title": "Audit SEO Potenziati dall'AI",
