@@ -102,7 +102,7 @@ function AuditDetailSkeleton() {
 
 export default function AuditDetailPage() {
   const { t } = useI18n();
-  const { loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const params = useParams();
   const id = params.id as string;
   const queryClient = useQueryClient();
@@ -203,7 +203,7 @@ export default function AuditDetailPage() {
         <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-8">
           <div>
             <Button variant="link" asChild className="p-0 h-auto mb-2 text-indigo-600">
-              <Link href="/audits">← {t.common.back}</Link>
+              <Link href={user ? "/audits" : "/"}>← {t.common.back}</Link>
             </Button>
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">
               {audit.client_name || audit.url}
