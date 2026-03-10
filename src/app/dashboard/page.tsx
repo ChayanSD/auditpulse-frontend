@@ -116,8 +116,10 @@ export default function DashboardPage() {
     : null;
 
   const handleNewAudit = () => {
-    // Check if subscription is active
-    if (!sub || sub.status === "trialing" || sub.status === "unpaid" || sub.status === "canceled") {
+    // Check if subscription or trial is active
+    const isSubscriptionActive = sub && (sub.status === "active" || sub.status === "trialing");
+    
+    if (!isSubscriptionActive) {
       router.push("/pricing");
     } else {
       router.push("/audits/new");
