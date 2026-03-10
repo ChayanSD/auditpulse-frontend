@@ -43,10 +43,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (loading) return;
 
         const publicPaths = ["/", "/login", "/register", "/pricing", "/demo"];
-        const isPublicPath = publicPaths.includes(pathname);
+        const isPublicPath = publicPaths.includes(pathname) || pathname.startsWith("/audits/");
+        const isProtectedAuditPath = pathname === "/audits" || pathname === "/audits/"; 
+
         const token = typeof window !== "undefined" ? localStorage.getItem("ap_token") : null;
 
-        if (!token && !isPublicPath) {
+        if (!token && (!isPublicPath || isProtectedAuditPath)) {
             // Not logged in and trying to access a protected page
             router.replace("/login");
         } else if (token && ["/login", "/register"].includes(pathname)) {
