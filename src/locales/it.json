@@ -135,7 +135,7 @@
     "beta_offer": "🎉 Offerta Beta Tester: ricevi il tuo primo mese gratuito al lancio!",
     "plans": {
       "starter": {
-        "name": "Starter",
+        "name": "Piano Starter",
         "price": "49",
         "audits": "10 audit / mese",
         "features": [
@@ -147,7 +147,7 @@
         ]
       },
       "professional": {
-        "name": "Professional",
+        "name": "Piano Professional",
         "price": "99",
         "audits": "50 audit / mese",
         "features": [
@@ -159,7 +159,7 @@
         ]
       },
       "agency": {
-        "name": "Agency",
+        "name": "Piano Agency",
         "price": "199",
         "audits": "200 audit / mese",
         "features": [
@@ -168,7 +168,8 @@
           "Accesso API",
           "Branding personalizzato",
           "Supporto dedicato"
-        ]
+        ],
+        "badge": "PIANO TOP"
       }
     }
   },
@@ -199,6 +200,8 @@
     "save": "Salva Modifiche",
     "saved": "Salvato!",
     "subscription": "Abbonamento",
+    "subscription_desc": "Visualizza i dettagli del tuo piano corrente e l'utilizzo",
+    "manage_subscription": "Gestisci il tuo abbonamento",
     "referrals": "Referral",
     "refer_friend": "Invita un collega",
     "refer_desc": "Guadagna un mese gratuito per ogni agenzia che si abbona tramite il tuo referral.",
@@ -207,7 +210,41 @@
     "copied": "Copiato!",
     "referrals_sent": "Referral inviati",
     "referrals_converted": "Convertiti",
-    "referral_sent_success": "Invito referral inviato!"
+    "referral_sent_success": "Invito referral inviato!",
+    "manage_account": "Gestisci le preferenze del tuo account e l'abbonamento",
+    "plan": "Piano",
+    "current_plan": "Piano Corrente",
+    "status_active": "Attivo",
+    "status_trialing": "Prova",
+    "status_canceled": "Annullato",
+    "status_past_due": "Pagamento in ritardo",
+    "status_unpaid": "Non pagato",
+    "active_cancel_at_period_end": "Attivo (Si annulla a fine periodo)",
+    "free_months_remaining": "mesi gratuiti rimanenti",
+    "monthly_usage": "Utilizzo Mensile",
+    "audits_used": "audit utilizzati",
+    "quota_used": "% della tua quota mensile utilizzata",
+    "cancel_subscription": "Annulla Abbonamento",
+    "cancel_warning": "Perderai l'accesso alla fine del periodo di fatturazione.",
+    "cancel_plan": "Annulla Piano",
+    "reactivate_subscription": "Riattiva Abbonamento",
+    "reactivate_warning": "Mantieni il tuo piano corrente e impedisci che venga annullato.",
+    "reactivating": "Riattivazione...",
+    "reactivate_plan": "Riattiva Piano",
+    "current_billing_period": "Periodo di fatturazione corrente",
+    "next_billing_date": "Prossimo rinnovo",
+    "quota_resets": "La quota si rinnova",
+    "audits_not_used": "Gli audit non utilizzati si azzerano mensilmente",
+    "trial_ends": "La prova termina",
+    "no_active_subscription": "Nessun abbonamento attivo.",
+    "view_plans": "Vedi Piani",
+    "email": "Email",
+    "status": "Stato",
+    "plans": {
+      "starter": "Piano Starter",
+      "professional": "Piano Professional",
+      "agency": "Piano Agency"
+    }
   },
   "common": {
     "loading": "Caricamento...",
