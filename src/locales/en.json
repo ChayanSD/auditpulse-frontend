@@ -168,7 +168,8 @@
           "API access",
           "Custom branding",
           "Dedicated support"
-        ]
+        ],
+        "badge": "TOP PLAN"
       }
     }
   },
@@ -199,6 +200,8 @@
     "save": "Save Changes",
     "saved": "Saved!",
     "subscription": "Subscription",
+    "subscription_desc": "View your current plan details and usage",
+    "manage_subscription": "Manage your subscription",
     "referrals": "Referrals",
     "refer_friend": "Refer a colleague",
     "refer_desc": "Earn one free month for every agency that subscribes via your referral.",
@@ -207,7 +210,41 @@
     "copied": "Copied!",
     "referrals_sent": "Referrals sent",
     "referrals_converted": "Converted",
-    "referral_sent_success": "Referral invitation sent!"
+    "referral_sent_success": "Referral invitation sent!",
+    "manage_account": "Manage your account preferences and subscription",
+    "plan": "Plan",
+    "current_plan": "Current Plan",
+    "status_active": "Active",
+    "status_trialing": "Trialing",
+    "status_canceled": "Canceled",
+    "status_past_due": "Past Due",
+    "status_unpaid": "Unpaid",
+    "active_cancel_at_period_end": "Active (Cancels at period end)",
+    "free_months_remaining": "free month(s) remaining",
+    "monthly_usage": "Monthly Usage",
+    "audits_used": "audits used",
+    "quota_used": "% of your monthly quota used",
+    "cancel_subscription": "Cancel Subscription",
+    "cancel_warning": "You will lose access at the end of your billing period.",
+    "cancel_plan": "Cancel Plan",
+    "reactivate_subscription": "Reactivate Subscription",
+    "reactivate_warning": "Keep your current plan and prevent it from canceling.",
+    "reactivating": "Reactivating...",
+    "reactivate_plan": "Reactivate Plan",
+    "current_billing_period": "Current billing period",
+    "next_billing_date": "Next billing date",
+    "quota_resets": "Quota resets",
+    "audits_not_used": "Unused audits reset monthly",
+    "trial_ends": "Trial ends",
+    "no_active_subscription": "No active subscription.",
+    "view_plans": "View Plans",
+    "email": "Email",
+    "status": "Status",
+    "plans": {
+      "starter": "Starter Plan",
+      "professional": "Professional Plan",
+      "agency": "Agency Plan"
+    }
   },
   "common": {
     "loading": "Loading...",

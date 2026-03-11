@@ -51,7 +51,14 @@ export default function PricingPage() {
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
   // For non-logged in users, show all plans without highlighting any
-  const subscription = user && subData && PLAN_KEYS.includes(subData.plan as PlanKey) ? subData : null;
+  const hasActiveLikeStatus =
+    subData?.status === "active" ||
+    subData?.status === "trialing" ||
+    subData?.status === "past_due";
+  const subscription =
+    user && subData && hasActiveLikeStatus && PLAN_KEYS.includes(subData.plan as PlanKey)
+      ? subData
+      : null;
   const currentPlan = (subscription?.plan as PlanKey) || null;
   const isTrialing = subscription?.status === "trialing";
   const isActive = subscription?.status === "active";
@@ -77,6 +84,11 @@ export default function PricingPage() {
       return;
     }
 
+    if (currentPlan && PLAN_KEYS.indexOf(currentPlan) > PLAN_KEYS.indexOf(planKey)) {
+      toast.error("Downgrade is available at the end of your current billing period.");
+      return;
+    }
+
     setCheckoutLoading(planKey);
     try {
       const baseUrl = window.location.origin;
@@ -87,16 +99,8 @@ export default function PricingPage() {
         locale // Pass current application locale
       );
 
-      // Check if it's a direct upgrade (no Stripe checkout needed)
-      if (checkout_url.includes("upgraded=true")) {
-        // For upgrades, we updated locally - just show success
-        toast.success(fmt(t.pricing.upgrade_success, { plan: planKey }));
-        // Redirect to settings
-        window.location.href = checkout_url.replace("?upgraded=true", "");
-      } else {
-        // Redirect to Stripe Checkout
-        window.location.href = checkout_url;
-      }
+      // Redirect to Stripe Checkout (now always shows payment for upgrades)
+      window.location.href = checkout_url;
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to start checkout");
       setCheckoutLoading(null);
@@ -141,13 +145,15 @@ export default function PricingPage() {
                 <Card
                   key={planKey}
                   className={cn(
-                    "flex flex-col transition-all duration-500 group relative",
+                    "flex flex-col transition-all duration-500 group relative border-2",
                     "lg:hover:scale-[1.02] lg:hover:shadow-2xl lg:hover:shadow-indigo-500/10",
                     isCurrentPlan
-                      ? "border-2 border-emerald-500 shadow-lg ring-4 ring-emerald-500/10"
-                      : isPopular
-                        ? "border-2 border-indigo-600 shadow-xl bg-gradient-to-b from-indigo-50/20 to-white"
-                        : "border border-gray-100 lg:hover:border-indigo-200"
+                      ? "border-emerald-500 shadow-lg ring-4 ring-emerald-500/10"
+                      : planKey === "agency"
+                        ? "border-indigo-600 shadow-xl bg-gradient-to-b from-indigo-50/20 to-white"
+                        : isPopular
+                          ? "border-indigo-600 shadow-xl bg-gradient-to-b from-indigo-50/20 to-white"
+                          : "border-gray-200 lg:hover:border-indigo-300"
                   )}
                 >
                   <CardContent className="p-6 sm:p-8 flex flex-col flex-1 relative z-10">
@@ -158,6 +164,10 @@ export default function PricingPage() {
                           {isTrialing
                             ? t.pricing.trialing_plan
                             : t.pricing.current_plan}
+                        </Badge>
+                      ) : planKey === "agency" ? (
+                        <Badge className="bg-indigo-600 text-white border-0 shadow-sm px-4 py-1">
+                          {t.pricing.plans.agency.badge || "TOP PLAN"}
                         </Badge>
                       ) : isPopular ? (
                         <Badge className="bg-indigo-600 text-white border-0 shadow-sm px-4 py-1 animate-pulse">
@@ -242,7 +252,7 @@ export default function PricingPage() {
                           )}
                           size="lg"
                           onClick={() => handleCheckout(planKey)}
-                          disabled={!!checkoutLoading}
+                          disabled={!!checkoutLoading || !!isDowngrade}
                         >
                           {checkoutLoading === planKey ? (
                             <span className="flex items-center gap-2">
@@ -254,7 +264,7 @@ export default function PricingPage() {
                           ) : isUpgrade ? (
                             "Upgrade"
                           ) : isDowngrade ? (
-                            "Downgrade"
+                            "Downgrade (Period end)"
                           ) : (
                             t.pricing.choose_plan
                           )}

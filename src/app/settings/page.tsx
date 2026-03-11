@@ -206,6 +206,14 @@ export default function SettingsPage() {
   const usagePercent = sub
     ? Math.min(100, (sub.audits_used_this_month / sub.audits_per_month) * 100)
     : 0;
+  const getStatusLabel = (status: string) => {
+    if (status === "trialing") return t.settings.status_trialing;
+    if (status === "active") return t.settings.status_active;
+    if (status === "canceled") return t.settings.status_canceled;
+    if (status === "past_due") return t.settings.status_past_due;
+    if (status === "unpaid") return t.settings.status_unpaid;
+    return status;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -217,7 +225,7 @@ export default function SettingsPage() {
             {t.settings.title}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage your account preferences and subscription
+            {t.settings.manage_account}
           </p>
         </div>
 
@@ -293,7 +301,7 @@ export default function SettingsPage() {
                   {t.settings.subscription}
                 </CardTitle>
                 <CardDescription>
-                  View your current plan details and usage
+                  {t.settings.subscription_desc}
                 </CardDescription>
               </CardHeader>
               <Separator />
@@ -321,69 +329,100 @@ export default function SettingsPage() {
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900 capitalize">
-                            {sub.plan} Plan
+                            {t.settings.plans?.[sub.plan as keyof typeof t.settings.plans] || `${sub.plan} Plan`}
                           </p>
                           <div className="flex items-center gap-2 mt-1 flex-wrap">
                             <Badge
                               variant="outline"
-                              className={`capitalize ${sub.cancel_at_period_end
-                                ? "bg-amber-50 text-amber-700 border-amber-200"
-                                : "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                }`}
+                              className={`capitalize ${sub.cancel_at_period_end ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"}`}
                             >
-                              {sub.cancel_at_period_end
-                                ? "Active (Cancels at period end)"
-                                : sub.status}
+                              {sub.cancel_at_period_end ? t.settings.active_cancel_at_period_end : getStatusLabel(sub.status)}
                             </Badge>
                           </div>
                         </div>
                       </div>
                       {sub.free_months_remaining > 0 && (
                         <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">
-                          {sub.free_months_remaining} free month(s) remaining
+                          {sub.free_months_remaining} {t.settings.free_months_remaining}
                         </Badge>
                       )}
                     </div>
 
                     <Separator />
 
+                    {/* Billing Dates - Bug 5 */}
+                    {sub.current_period_end && (
+                      <>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <div className="p-3 rounded-lg bg-gray-50">
+                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t.settings.next_billing_date}</p>
+                            <p className="text-sm font-semibold text-gray-900 mt-1">{new Date(sub.current_period_end).toLocaleDateString()}</p>
+                          </div>
+                          <div className="p-3 rounded-lg bg-gray-50">
+                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t.settings.quota_resets}</p>
+                            <p className="text-sm font-semibold text-gray-900 mt-1">{new Date(sub.current_period_end).toLocaleDateString()}</p>
+                          </div>
+                          <div className="p-3 rounded-lg bg-gray-50">
+                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t.settings.status}</p>
+                            <p className="text-sm font-semibold text-gray-900 mt-1 capitalize">{sub.cancel_at_period_end ? t.settings.active_cancel_at_period_end : getStatusLabel(sub.status)}</p>
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{t.settings.audits_not_used}</p>
+                        <Separator />
+                      </>
+                    )}
+
+                    {/* Trial End Date - for trialing users */}
+                    {sub.status === "trialing" && sub.trial_end && (
+                      <>
+                        <div className="p-4 rounded-lg bg-amber-50 border border-amber-200">
+                          <p className="text-xs font-medium text-amber-700 uppercase tracking-wide">{t.settings.trial_ends}</p>
+                          <p className="text-lg font-semibold text-amber-900 mt-1">{new Date(sub.trial_end).toLocaleDateString()}</p>
+                          <p className="text-xs text-amber-600 mt-2">{t.pricing.trial_note}</p>
+                        </div>
+                        <Separator />
+                      </>
+                    )}
+
                     {/* Usage */}
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm font-medium text-gray-900">
-                          Monthly Usage
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {sub.audits_used_this_month} / {sub.audits_per_month}{" "}
-                          audits
-                        </p>
+                        <p className="text-sm font-medium text-gray-900">{t.settings.monthly_usage}</p>
+                        <p className="text-sm text-muted-foreground">{sub.audits_used_this_month} / {sub.audits_per_month} {t.settings.audits_used}</p>
                       </div>
                       <Progress value={usagePercent} className="h-2" />
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {Math.round(usagePercent)}% of your monthly quota used
-                      </p>
+                      <p className="text-xs text-muted-foreground mt-2">{Math.round(usagePercent)}% {t.settings.quota_used}</p>
                     </div>
 
                     <Separator />
+
+                    {(sub.status === "unpaid" || sub.status === "canceled") && (
+                      <>
+                        <div className="pt-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-amber-50 border border-amber-100">
+                            <div>
+                              <p className="text-sm font-medium text-amber-900">{t.settings.no_active_subscription}</p>
+                              <p className="text-xs text-amber-700 mt-1">{t.settings.view_plans}</p>
+                            </div>
+                            <Button asChild size="sm" className="shrink-0">
+                              <a href="/pricing">{t.settings.view_plans}</a>
+                            </Button>
+                          </div>
+                        </div>
+                        <Separator />
+                      </>
+                    )}
 
                     {/* Cancel Subscription */}
                     {sub.status === "active" && !sub.cancel_at_period_end && (
                       <div className="pt-4">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-red-50 border border-red-100">
                           <div>
-                            <p className="text-sm font-medium text-red-900">
-                              Cancel Subscription
-                            </p>
-                            <p className="text-xs text-red-700 mt-1">
-                              You will lose access at the end of your billing period.
-                            </p>
+                            <p className="text-sm font-medium text-red-900">{t.settings.cancel_subscription}</p>
+                            <p className="text-xs text-red-700 mt-1">{t.settings.cancel_warning}</p>
                           </div>
-                          <button
-                            type="button"
-                            className="text-sm font-semibold text-red-600 hover:text-red-700 bg-white border border-red-200 rounded-md px-3 py-1.5 shadow-sm transition-colors"
-                            onClick={() => setCancelDialogOpen(true)}
-                          >
-                            Cancel Plan
+                          <button type="button" className="text-sm font-semibold text-red-600 hover:text-red-700 bg-white border border-red-200 rounded-md px-3 py-1.5 shadow-sm transition-colors" onClick={() => setCancelDialogOpen(true)}>
+                            {t.settings.cancel_plan}
                           </button>
                         </div>
                       </div>
@@ -394,20 +433,11 @@ export default function SettingsPage() {
                       <div className="pt-4">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-emerald-50 border border-emerald-100">
                           <div>
-                            <p className="text-sm font-medium text-emerald-900">
-                              Reactivate Subscription
-                            </p>
-                            <p className="text-xs text-emerald-700 mt-1">
-                              Keep your current plan and prevent it from canceling.
-                            </p>
+                            <p className="text-sm font-medium text-emerald-900">{t.settings.reactivate_subscription}</p>
+                            <p className="text-xs text-emerald-700 mt-1">{t.settings.reactivate_warning}</p>
                           </div>
-                          <Button
-                            size="sm"
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white border-0 shadow-sm shrink-0"
-                            onClick={handleReactivateSubscription}
-                            disabled={reactivating}
-                          >
-                            {reactivating ? "Reactivating..." : "Reactivate Plan"}
+                          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white border-0 shadow-sm shrink-0" onClick={handleReactivateSubscription} disabled={reactivating}>
+                            {reactivating ? t.settings.reactivating : t.settings.reactivate_plan}
                           </Button>
                         </div>
                       </div>
@@ -420,12 +450,8 @@ export default function SettingsPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
                       </svg>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      No active subscription.
-                    </p>
-                    <Button asChild className="mt-4">
-                      <a href="/pricing">View Plans</a>
-                    </Button>
+                    <p className="text-sm text-muted-foreground">{t.settings.no_active_subscription}</p>
+                    <Button asChild className="mt-4"><a href="/pricing">{t.settings.view_plans}</a></Button>
                   </div>
                 )}
               </CardContent>
